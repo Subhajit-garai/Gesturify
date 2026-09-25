@@ -1,21 +1,35 @@
 import type { Metadata, Viewport } from "next";
+import { Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
 import { SmoothScrollProvider } from "@/components/SmoothScrollProvider";
 import "./globals.css";
 
+const plusJakarta = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  variable: "--font-sans",
+  display: "swap",
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
-  title: "Gesturify AI - Real-Time Indian Sign Language (ISL) Interpreter",
+  title: "Gesturify — Minimalist Sign Language & Muted Communication Platform",
   description:
-    "Web-based real-time Indian Sign Language (ISL) interpreter converting rear-camera hand and body gestures into text and spoken voice with 100% on-device privacy.",
+    "A minimalist, accessible platform designed for muted individuals and sign language learners. Real-time gesture translation, practice drills, and OpenCV landmark tracking.",
   keywords: [
+    "Sign Language",
     "Indian Sign Language",
     "ISL",
-    "Sign Language Interpreter",
-    "MediaPipe",
-    "Real-Time",
     "Accessibility",
     "Assistive Technology",
+    "MediaPipe",
+    "OpenCV",
+    "Gesture Recognition",
   ],
-  authors: [{ name: "Gesturify AI Team" }],
+  authors: [{ name: "Gesturify Core Team" }],
 };
 
 export const viewport: Viewport = {
@@ -23,7 +37,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
-  themeColor: "#060913",
+  themeColor: "#9c89b8",
 };
 
 export default function RootLayout({
@@ -32,8 +46,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
-      <body className="min-h-screen bg-[#060913] text-slate-100 antialiased selection:bg-cyan-500 selection:text-surface-darker">
+    <html lang="en" className="scroll-smooth">
+      <body
+        className={`min-h-screen flex flex-col antialiased selection:bg-zinc-900 selection:text-white font-sans ${plusJakarta.variable} ${jetbrainsMono.variable}`}
+      >
         <SmoothScrollProvider>{children}</SmoothScrollProvider>
       </body>
     </html>

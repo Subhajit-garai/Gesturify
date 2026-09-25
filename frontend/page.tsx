@@ -1,18 +1,16 @@
 "use client";
 
-import React, { useState } from "react";
-import Header from "@/components/Header";
-import Hero from "@/components/Hero";
-import LearnerHub from "@/components/LearnerHub";
-import TranslationStudio from "@/components/TranslationStudio";
-import { VideoLearningSection } from "@/components/VideoLearningSection";
-import About from "@/components/About";
-import Contact from "@/components/Contact";
-import AuthModal from "@/components/AuthModal";
-import { SentenceTemplate } from "@/data/gestures";
-import { ShieldCheck, Video, Sparkles } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import Header from "./components/Header";
+import Hero from "./components/Hero";
+import LearnerHub from "./components/LearnerHub";
+import TranslationStudio from "./components/TranslationStudio";
+import About from "./components/About";
+import Contact from "./components/Contact";
+import AuthModal from "./components/AuthModal";
+import { SentenceTemplate } from "./data/gestures";
 
-export default function GesturifyPage() {
+export default function FrontendPage() {
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [fontSizeLevel, setFontSizeLevel] = useState(0); // -1, 0, 1, 2
@@ -46,13 +44,7 @@ export default function GesturifyPage() {
   };
 
   const fontSizeClass =
-    fontSizeLevel === 1
-      ? "text-[104%]"
-      : fontSizeLevel === 2
-      ? "text-[108%]"
-      : fontSizeLevel === -1
-      ? "text-[96%]"
-      : "";
+    fontSizeLevel === 1 ? "text-[104%]" : fontSizeLevel === 2 ? "text-[108%]" : fontSizeLevel === -1 ? "text-[96%]" : "";
 
   return (
     <div
@@ -69,49 +61,10 @@ export default function GesturifyPage() {
 
       {/* Main Content Sections */}
       <main className="flex-1">
-        {/* Hero Section */}
         <Hero />
-
-        {/* Section 1: Sign Language Learner Studio */}
         <LearnerHub onSelectSentenceForAnimation={handleSelectSentenceForAnimation} />
-
-        {/* Section 2: Synchronized Translation & Video Studio */}
-        <TranslationStudio
-          initialText={initialTransText}
-          onOpenLearning={() => {
-            const el = document.getElementById("video-learning");
-            if (el) el.scrollIntoView({ behavior: "smooth" });
-          }}
-        />
-
-        {/* Section 3: Interactive Video Learning & Quiz Modules */}
-        <section id="video-learning" className="py-16 border-b border-zinc-200 bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="mb-8 pb-6 border-b border-zinc-200">
-              <span className="section-tag">Module 03 // Video Academy &amp; ISL Quizzes</span>
-              <h2 className="text-3xl font-bold tracking-tight text-zinc-900">
-                Learn with Video Modules &amp; Quizzes
-              </h2>
-              <p className="text-sm text-zinc-500 mt-1 max-w-2xl">
-                Explore structured Indian Sign Language lessons, interactive timestamped transcripts, and test your knowledge with gesture drills.
-              </p>
-            </div>
-
-            <VideoLearningSection
-              onPracticeSign={(_signId) => {
-                const transElement = document.getElementById("translation");
-                if (transElement) {
-                  transElement.scrollIntoView({ behavior: "smooth" });
-                }
-              }}
-            />
-          </div>
-        </section>
-
-        {/* Section 4: About Gesturify */}
+        <TranslationStudio initialText={initialTransText} />
         <About />
-
-        {/* Section 5: Community & Inquiries Contact */}
         <Contact />
       </main>
 
@@ -120,7 +73,7 @@ export default function GesturifyPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-500 font-mono">
           <div className="flex items-center gap-2">
             <span className="font-bold text-zinc-900 font-mono">Gesturify</span>
-            <span>© 2026. Minimalist Assistive Communication Platform.</span>
+            <span>© 2026. Minimalist Assistive Communication.</span>
           </div>
           <div className="flex gap-4">
             <a href="#learner" className="hover:underline">
@@ -128,9 +81,6 @@ export default function GesturifyPage() {
             </a>
             <a href="#translation" className="hover:underline">
               Translation
-            </a>
-            <a href="#video-learning" className="hover:underline">
-              Video Modules
             </a>
             <a href="#about" className="hover:underline">
               About

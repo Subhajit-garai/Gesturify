@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gesturify — Minimalist Sign Language & Muted Communication Platform</title>
+  <meta name="description" content="A minimalist, accessible platform designed for muted individuals and sign language learners. Real-time gesture translation, practice drills, and OpenCV landmark tracking.">
+  
+  <!-- Google Fonts for crisp typography & readability -->
+   
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN (Clean utility classes) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            amethyst_smoke: {
+              DEFAULT: '#9c89b8',
+              100: '#1f1828',
+              200: '#3d3050',
+              300: '#5c4878',
+              400: '#7a61a0',
+              500: '#9c89b8',
+              600: '#b0a1c6',
+              700: '#c4b8d5',
+              800: '#d7d0e3',
+              900: '#ebe7f1'
+            },
+            blush_pop: {
+              DEFAULT: '#f0a6ca',
+              100: '#460c28',
+              200: '#8c1850',
+              300: '#d12378',
+              400: '#e462a1',
+              500: '#f0a6ca',
+              600: '#f3b9d5',
+              700: '#f6cbe0',
+              800: '#f9dcea',
+              900: '#fceef5'
+            },
+            pink_orchid: {
+              DEFAULT: '#efc3e6',
+              100: '#44123a',
+              200: '#892475',
+              300: '#cb3aae',
+              400: '#dd7eca',
+              500: '#efc3e6',
+              600: '#f2cfeb',
+              700: '#f5dbf0',
+              800: '#f9e7f5',
+              900: '#fcf3fa'
+            },
+            lavender_blush: {
+              DEFAULT: '#f0e6ef',
+              100: '#3b2338',
+              200: '#754671',
+              300: '#a970a4',
+              400: '#cdabc9',
+              500: '#f0e6ef',
+              600: '#f3ebf2',
+              700: '#f6f0f5',
+              800: '#f9f5f8',
+              900: '#fcfafc'
+            },
+            periwinkle: {
+              DEFAULT: '#b8bedd',
+              100: '#1a1f36',
+              200: '#343e6d',
+              300: '#4f5da3',
+              400: '#808bc2',
+              500: '#b8bedd',
+              600: '#c5cae3',
+              700: '#d4d7ea',
+              800: '#e2e5f1',
+              900: '#f1f2f8'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Custom Monochrome Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-white text-zinc-900 min-h-screen flex flex-col antialiased selection:bg-zinc-900 selection:text-white">
+
+  <!-- ==================== HEADER & NAVIGATION ==================== -->
+  <header class="sticky top-0 z-50 w-full border-b border-zinc-200 bg-white/95 backdrop-blur">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      
+      <!-- Brand Logo -->
+      <a href="#" class="flex items-center gap-2 text-zinc-900 hover:opacity-80 transition-opacity">
+        <span class="font-bold text-lg tracking-tight font-mono">Gesturify</span>
+        <span class="hidden sm:inline-block text-[10px] text-zinc-500 font-mono tracking-widest uppercase ml-2 border-l border-zinc-200 pl-2">Accessibility Core</span>
+      </a>
+
+      <!-- Primary Nav Links -->
+      <nav class="hidden md:flex items-center gap-1" aria-label="Main Navigation">
+        <a href="#learner" class="nav-link px-3.5 py-1.5 text-sm font-medium text-zinc-600 hover:text-zinc-950 hover:bg-zinc-100 rounded-md transition-colors">
+          Learner Hub
+        </a>
+        <a href="#translation" class="nav-link px-3.5 py-1.5 text-sm font-medium text-zinc-600 hover:text-zinc-950 hover:bg-zinc-100 rounded-md transition-colors">
+          Translation Studio
+        </a>
+        <a href="#about" class="nav-link px-3.5 py-1.5 text-sm font-medium text-zinc-600 hover:text-zinc-950 hover:bg-zinc-100 rounded-md transition-colors">
+          About
+        </a>
+        <a href="#contact" class="nav-link px-3.5 py-1.5 text-sm font-medium text-zinc-600 hover:text-zinc-950 hover:bg-zinc-100 rounded-md transition-colors">
+          Contact
+        </a>
+      </nav>
+
+      <!-- Right Utility Actions (Accessibility & Auth) -->
+      <div class="flex items-center gap-2">
+        <!-- Accessibility Controls -->
+        <div class="hidden sm:flex items-center border border-zinc-200 rounded-md p-0.5 bg-zinc-50">
+          <button id="toggle-contrast" type="button" title="Toggle high contrast" class="p-1.5 text-zinc-600 hover:text-zinc-950 hover:bg-white rounded transition-all">
+            <i data-lucide="contrast" class="w-3.5 h-3.5"></i>
+          </button>
+        </div>
+
+        <!-- Auth Button ("Manato Technique") -->
+        <button type="button" data-open-auth class="inline-flex items-center gap-2 text-xs sm:text-sm font-medium px-3.5 py-1.5 rounded-md bg-zinc-900 text-white hover:bg-zinc-800 transition-colors">
+          <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
+          <span>Login / Signup</span>
+        </button>
+
+        <!-- Mobile Menu Toggle Button -->
+        <button id="mobile-menu-btn" type="button" class="md:hidden p-2 text-zinc-600 hover:text-zinc-900 rounded-md" aria-label="Toggle mobile menu">
+          <i data-lucide="menu" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Mobile Navigation Dropdown -->
+    <div id="mobile-menu" class="hidden md:hidden border-t border-zinc-200 bg-white px-4 pt-2 pb-4 space-y-1">
+      <a href="#learner" class="block px-3 py-2 rounded-md text-base font-medium text-zinc-700 hover:bg-zinc-100">Learner Hub</a>
+      <a href="#translation" class="block px-3 py-2 rounded-md text-base font-medium text-zinc-700 hover:bg-zinc-100">Translation Studio</a>
+      <a href="#about" class="block px-3 py-2 rounded-md text-base font-medium text-zinc-700 hover:bg-zinc-100">About Gesturify</a>
+      <a href="#contact" class="block px-3 py-2 rounded-md text-base font-medium text-zinc-700 hover:bg-zinc-100">Contact</a>
+    </div>
+  </header>
+
+  <!-- ==================== HERO SECTION ==================== -->
+  <main class="flex-1">
+    <section class="border-b border-zinc-200 bg-zinc-50/60 py-5 sm:py-5">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="max-w-3xl">
+          
+          <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-zinc-950 mb-40 leading-tight">
+            Universal Sign Language & Gestural Communication.
+          </h1>
+          
+
+          <!-- Action Jump Cards -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <a href="#learner" class="group p-5 bg-white border border-zinc-200 rounded-xl hover:border-zinc-900 transition-all flex flex-col justify-between shadow-sm">
+              <div>
+                <h2 class="text-lg font-bold text-zinc-900 mb-1">Learner Practice Hub</h2>
+                <p class="text-sm text-zinc-500 leading-normal">
+                  Alphabet drills, essential vocabulary, sentence syntax, and OpenCV skeletal camera verification.
+                </p>
+              </div>
+              <div class="mt-4 pt-3 border-t border-zinc-100 flex items-center text-xs font-semibold text-zinc-900 gap-1 group-hover:translate-x-1 transition-transform">
+                Start Learning Drills <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+              </div>
+            </a>
+
+            <a href="#translation" class="group p-5 bg-white border border-zinc-200 rounded-xl hover:border-zinc-900 transition-all flex flex-col justify-between shadow-sm">
+              <div>
+                <h2 class="text-lg font-bold text-zinc-900 mb-1">Translation & Video Studio</h2>
+                <p class="text-sm text-zinc-500 leading-normal">
+                  Real-time video gesture-to-speech transcription & text-to-sign animated sequences.
+                </p>
+              </div>
+              <div class="mt-4 pt-3 border-t border-zinc-100 flex items-center text-xs font-semibold text-zinc-900 gap-1 group-hover:translate-x-1 transition-transform">
+                Launch Live Translation <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+              </div>
+            </a>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==================== LEARNER PRACTICE MODULE ==================== -->
+    <section id="learner" class="py-16 border-b border-zinc-200">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <!-- Section Header -->
+        <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 pb-6 border-b border-zinc-200 gap-4">
+          <div>
+
+            <h2 class="text-3xl font-bold tracking-tight text-zinc-900">Sign Language Learner Studio</h2>
+          </div>
+
+          <!-- Subtabs Controller -->
+          <div class="inline-flex p-1 bg-zinc-100 rounded-lg border border-zinc-200 flex-wrap gap-1">
+            <button type="button" class="tab-btn active" data-learner-tab="alphabet">
+              <i data-lucide="type" class="w-4 h-4"></i>
+              <span>Alphabet</span>
+            </button>
+            <button type="button" class="tab-btn" data-learner-tab="words">
+              <i data-lucide="layout-grid" class="w-4 h-4"></i>
+              <span>Words</span>
+            </button>
+            <button type="button" class="tab-btn" data-learner-tab="sentence">
+              <i data-lucide="git-commit" class="w-4 h-4"></i>
+              <span>Sentence Formation</span>
+            </button>
+            <button type="button" class="tab-btn" data-learner-tab="grammar">
+              <i data-lucide="check-check" class="w-4 h-4"></i>
+              <span>Grammar Fixing</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Main Learner Split Screen Layout -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          
+          <!-- Left Column: Content Cards & Drills (7 Cols) -->
+          <div class="lg:col-span-7">
+
+            <!-- Subview: Alphabet (A-Z Grid) -->
+            <div id="learner-view-alphabet" class="learner-subview">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="text-base font-semibold text-zinc-900">Fingerspelling Dictionary (A to Z)</h3>
+              </div>
+
+              <!-- Interactive A-Z Grid -->
+              <div id="alphabet-grid" class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-7 gap-2.5 mb-6">
+                <!-- Dynamically Populated by app.js -->
+              </div>
+
+              <!-- Selected Letter Detail Card -->
+              <div class="p-6 border border-zinc-200 rounded-xl bg-zinc-50">
+                <div class="flex items-start justify-between gap-4">
+                  <div class="w-16 h-16 rounded-xl bg-white border border-zinc-300 flex items-center justify-center text-3xl font-mono font-bold text-zinc-900 shadow-sm flex-shrink-0" id="alphabet-char-large">
+                    A
+                  </div>
+
+                </div>
+              </div>
+            </div>
+
+            <!-- Subview: Words -->
+            <div id="learner-view-words" class="learner-subview hidden">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="text-base font-semibold text-zinc-900">Essential Everyday Vocabulary</h3>
+              </div>
+              <div id="words-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
+                <!-- Dynamically Populated by app.js -->
+              </div>
+              <div class="p-4 border border-zinc-200 rounded-xl bg-zinc-50 flex items-center justify-between">
+                <div>
+                  <h4 class="text-sm font-bold text-zinc-900" id="word-practice-title">Select a word card above</h4>
+                  <p class="text-xs text-zinc-500" id="word-practice-desc">Click any card to inspect its hand motion and practice.</p>
+                </div>
+                <span class="text-xs font-mono text-zinc-400" id="word-practice-category">Category: All</span>
+              </div>
+            </div>
+
+            <!-- Subview: Sentence Formation -->
+            <div id="learner-view-sentence" class="learner-subview hidden">
+              <div class="mb-4">
+                <h3 class="text-base font-semibold text-zinc-900">Sentence Formation & Sign Syntax</h3>
+                <p class="text-xs text-zinc-500">Sign language follows topic-comment and directional grammar. Explore standard sentence structures below:</p>
+              </div>
+              <div id="sentence-templates-list">
+                <!-- Dynamically Populated by app.js -->
+              </div>
+            </div>
+
+            <!-- Subview: Grammar Fixing -->
+            <div id="learner-view-grammar" class="learner-subview hidden">
+              <div class="mb-4">
+                <h3 class="text-base font-semibold text-zinc-900">Grammar Rules & Correction Assistant</h3>
+                <p class="text-xs text-zinc-500">Understand the foundational structural differences between spoken language and gestural grammar:</p>
+              </div>
+              <div id="grammar-rules-list" class="space-y-4">
+                <!-- Dynamically Populated by app.js -->
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Right Column: OpenCV Landmark Tracking View (5 Cols) -->
+          <div class="lg:col-span-5 sticky top-24">
+            <div class="border border-zinc-200 rounded-2xl p-5 bg-white shadow-sm">
+              
+              <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full bg-zinc-900 animate-pulse"></span>
+                  <span class="font-mono text-xs uppercase tracking-wider font-semibold text-zinc-800">OpenCV Vision HUD</span>
+                </div>
+                <span id="active-pose-badge" class="badge-minimal">Pose: Letter A</span>
+              </div>
+
+              <!-- Canvas HUD Frame -->
+              <div class="opencv-hud aspect-video w-full rounded-xl overflow-hidden mb-4 relative">
+                <canvas id="opencv-canvas"></canvas>
+                <div class="opencv-badge">
+                  <div class="opencv-status-dot"></div>
+                  <span>CV2_LANDMARK_21</span>
+                </div>
+              </div>
+
+              <!-- HUD Specs & Telemetry -->
+              <div class="space-y-3 font-mono text-xs text-zinc-600 bg-zinc-50 p-4 rounded-xl border border-zinc-200">
+                <div class="flex items-center justify-between">
+                  <span>Tracking Engine:</span>
+                  <span class="font-semibold text-zinc-900">OpenCV Mediapipe Hands</span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <span>Keypoints Detected:</span>
+                  <span class="font-semibold text-zinc-900">21 Coordinates (X, Y, Z)</span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <span>Pose Stability:</span>
+                  <span class="font-semibold text-zinc-900">98.4% Nominal</span>
+                </div>
+                <div class="flex items-center justify-between border-t border-zinc-200 pt-2">
+                  <span>Target Handshape:</span>
+                  <span class="font-semibold text-zinc-900">Right Hand (Dominant)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==================== TRANSLATION & VIDEO STUDIO ==================== -->
+    <section id="translation" class="py-16 border-b border-zinc-200 bg-zinc-50/40">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <!-- Section Header -->
+        <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 pb-6 border-b border-zinc-200 gap-4">
+          <div>
+            <h2 class="text-3xl font-bold tracking-tight text-zinc-900">Translation & Video Studio</h2>
+          </div>
+
+          <!-- Dual Mode Toggle -->
+          <div class="inline-flex p-1 bg-zinc-100 rounded-lg border border-zinc-200">
+            <button type="button" class="tab-btn active" data-trans-tab="textToAnim">
+              <i data-lucide="play-circle" class="w-4 h-4"></i>
+              <span>Text to Animation</span>
+            </button>
+            <button type="button" class="tab-btn" data-trans-tab="videoToText">
+              <i data-lucide="camera" class="w-4 h-4"></i>
+              <span>Real-Time Video to Text</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Translation View 1: Text to Animation -->
+        <div id="trans-subview-textToAnim" class="space-y-6">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- Left: Input & Phrase Controller (5 Cols) -->
+            <div class="lg:col-span-5 space-y-4">
+              <div class="p-6 bg-white border border-zinc-200 rounded-2xl shadow-sm">
+                <label for="text-to-sign-input" class="block text-xs font-mono uppercase text-zinc-500 mb-2">Input Sentence or Phrase</label>
+                <div class="space-y-3">
+                  <textarea id="text-to-sign-input" rows="3" class="input-minimal" placeholder="Input text"></textarea>
+                  
+                  <button id="btn-translate-text" type="button" class="w-full btn-primary">
+                    <i data-lucide="sparkles" class="w-4 h-4"></i>
+                    <span>Generate Sign Animation</span>
+                  </button>
+                </div>
+
+              </div>
+
+              <!-- Kinematic Info Card -->
+              <div class="p-5 bg-white border border-zinc-200 rounded-xl">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-mono uppercase text-zinc-500">Deconstructed Tokens</span>
+                  <span id="anim-token-count" class="text-xs font-mono text-zinc-900 font-semibold">4 Signs Generated</span>
+                </div>
+                <div id="sign-anim-timeline" class="flex gap-2 overflow-x-auto pb-2">
+                  <div class="flex-shrink-0 px-3 py-1.5 rounded border text-xs font-mono bg-zinc-900 text-white border-zinc-900">1. HELLO</div>
+                  <div class="flex-shrink-0 px-3 py-1.5 rounded border text-xs font-mono bg-white text-zinc-800 border-zinc-300">2. NICE</div>
+                  <div class="flex-shrink-0 px-3 py-1.5 rounded border text-xs font-mono bg-white text-zinc-800 border-zinc-300">3. MEET</div>
+                  <div class="flex-shrink-0 px-3 py-1.5 rounded border text-xs font-mono bg-white text-zinc-800 border-zinc-300">4. YOU</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Animated Sign Playback Canvas (7 Cols) -->
+            <div class="lg:col-span-7">
+              <div class="p-6 bg-white border border-zinc-200 rounded-2xl shadow-sm space-y-4">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <h3 class="font-bold text-zinc-900 text-base" id="current-anim-token">Sign : HELLO</h3>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <button id="anim-play-btn" type="button" class="btn-secondary text-xs py-1 px-3">
+                      <i data-lucide="play" class="w-3.5 h-3.5"></i>
+                      <span>Play Sequence</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Animated Display Screen -->
+                <div class="w-full bg-zinc-950 rounded-xl aspect-video flex flex-col items-center justify-center p-8 text-center relative overflow-hidden border border-zinc-800">
+                  <div class="w-24 h-24 rounded-full border border-zinc-700 flex items-center justify-center text-zinc-300 mb-4 animate-pulse">
+                    <i data-lucide="hand" class="w-12 h-12"></i>
+                  </div>
+                  <p class="text-white font-mono text-sm tracking-widest uppercase mb-1">Gesture Motion Sequence</p>
+                  <div class="absolute bottom-3 left-4 right-4 flex items-center justify-between text-[11px] font-mono text-zinc-500">
+                    <span>Frame: 24 / 48</span>
+                  </div>
+                </div>
+
+                <div class="flex items-center justify-between pt-2 text-xs text-zinc-500 font-mono">
+                  <span>Playback Speed: 1.0x</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Translation View 2: Real-Time Video to Text -->
+        <div id="trans-subview-videoToText" class="space-y-6 hidden">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- Video & Camera Stream HUD (7 Cols) -->
+            <div class="lg:col-span-7">
+              <div class="p-6 bg-white border border-zinc-200 rounded-2xl shadow-sm">
+                <div class="flex items-center justify-between mb-4">
+                  <div class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-zinc-900 animate-ping"></span>
+                    <span class="font-mono text-xs uppercase font-bold text-zinc-800" id="camera-status-indicator">OPENCV ENGINE READY</span>
+                  </div>
+                  <span id="detection-confidence-badge" class="badge-minimal">Confidence: 96.4%</span>
+                </div>
+
+                <!-- Video HUD Container -->
+                <div class="relative w-full aspect-video bg-zinc-950 rounded-xl overflow-hidden border border-zinc-800 flex items-center justify-center">
+                  <video id="webcam-video-element" class="w-full h-full object-cover hidden" autoplay playsinline muted></video>
+                  
+                  <!-- Fallback HUD Canvas/Display -->
+                  <div class="text-center p-6 space-y-3">
+                    <div class="w-12 h-12 rounded-full border border-zinc-700 bg-zinc-900 mx-auto flex items-center justify-center text-white">
+                      <i data-lucide="camera" class="w-6 h-6"></i>
+                    </div>
+                    <p class="text-sm font-medium text-zinc-200">Real-Time Gesture Landmark Tracker</p>
+                    <p class="text-xs text-zinc-500 max-w-sm mx-auto">
+                      Click below to activate your webcam or run the simulated sign detection engine.
+                    </p>
+                  </div>
+
+                  <!-- Overlay Bounding Box HUD -->
+                  <div class="absolute inset-4 border border-zinc-500/30 rounded-lg pointer-events-none flex flex-col justify-between p-3 font-mono text-[10px] text-zinc-400">
+                    <div class="flex justify-between">
+                      <span>[ROI_TRACK_ACTIVE]</span>
+                      <span>21_LANDMARKS_CALIBRATED</span>
+                    </div>
+                    <div class="flex justify-between">
+                      <span>ISO_AUTO | 60FPS</span>
+                      <span>TARGET: UPPER BODY + HANDS</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Camera Controls -->
+                <div class="flex flex-wrap items-center justify-between gap-3 mt-4 pt-4 border-t border-zinc-100">
+                  <button id="btn-toggle-camera" type="button" class="btn-primary text-xs sm:text-sm">
+                    <i data-lucide="video" class="w-4 h-4"></i>
+                    <span>Start Real-Time Camera</span>
+                  </button>
+
+                  <div class="text-xs text-zinc-500 font-mono">
+                    Privacy: Local client-side processing
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Speech & Transcription Feed (5 Cols) -->
+            <div class="lg:col-span-5 space-y-4">
+              <div class="p-6 bg-white border border-zinc-200 rounded-2xl shadow-sm flex flex-col justify-between h-full">
+                <div>
+                  <div class="flex items-center justify-between mb-3 pb-3 border-b border-zinc-100">
+                    <h3 class="font-bold text-zinc-900 text-base">Live Translated Transcript</h3>
+                    <span class="text-xs font-mono text-zinc-400">Output Stream</span>
+                  </div>
+
+                  <p class="text-xs text-zinc-500 mb-4">
+                    Recognized gestures are automatically converted into readable English text for listening peers.
+                  </p>
+
+                  <div class="p-4 bg-zinc-50 rounded-xl border border-zinc-200 min-h-[160px] font-mono text-sm text-zinc-900 leading-relaxed mb-4" id="detected-transcript-text">
+                    HELLO THANK YOU PLEASE
+                  </div>
+                </div>
+
+                <!-- Audio Output for Muted Individuals -->
+                <div class="space-y-3 pt-3 border-t border-zinc-100">
+                  <div class="flex gap-2">
+                    <button id="btn-speak-transcript" type="button" class="flex-1 btn-primary text-xs sm:text-sm">
+                      <i data-lucide="volume-2" class="w-4 h-4"></i>
+                      <span>Speak Aloud (TTS)</span>
+                    </button>
+                    <button id="btn-copy-transcript" type="button" class="btn-secondary text-xs sm:text-sm">
+                      <i data-lucide="copy" class="w-4 h-4"></i>
+                      <span>Copy Text</span>
+                    </button>
+                  </div>
+                  <p class="text-[11px] text-zinc-400 text-center font-mono">
+                    Text-To-Speech enables muted users to communicate vocally in real time.
+                  </p>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==================== ABOUT SECTION ==================== -->
+    <section id="about" class="py-16 border-b border-zinc-200">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="max-w-3xl">
+          <span class="section-tag">About Gesturify</span>
+          <h2 class="text-3xl font-bold tracking-tight text-zinc-900 mb-4">
+            Democratizing Communication for Silence and Speech
+          </h2>
+          <p class="text-base text-zinc-600 leading-relaxed mb-8">
+            Gesturify was envisioned to bridge communication barriers for both the deaf & muted community and eager learners. By combining computer vision landmark analysis with modern accessibility interfaces, we provide tools for spontaneous conversations, education, and mutual understanding.
+          </p>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div class="p-5 border border-zinc-200 rounded-xl bg-white">
+              <div class="w-8 h-8 rounded bg-zinc-100 flex items-center justify-center text-zinc-900 mb-3">
+                <i data-lucide="eye" class="w-4 h-4"></i>
+              </div>
+              <h3 class="font-bold text-zinc-900 text-sm mb-1">Visual-First Design</h3>
+              <p class="text-xs text-zinc-500 leading-normal">
+                Minimalist, high-contrast monochrome design ensures maximum clarity for visual communicators without sensory overload.
+              </p>
+            </div>
+
+            <div class="p-5 border border-zinc-200 rounded-xl bg-white">
+              <div class="w-8 h-8 rounded bg-zinc-100 flex items-center justify-center text-zinc-900 mb-3">
+                <i data-lucide="cpu" class="w-4 h-4"></i>
+              </div>
+              <h3 class="font-bold text-zinc-900 text-sm mb-1">Edge Computer Vision</h3>
+              <p class="text-xs text-zinc-500 leading-normal">
+                Instant joint coordinate tracking running locally in the browser to maintain privacy and guarantee low latency.
+              </p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==================== CONTACT SECTION ==================== -->
+    <section id="contact" class="py-16 bg-zinc-50/50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          <div class="lg:col-span-5">
+            <span class="section-tag">Get in Touch</span>
+            <h2 class="text-3xl font-bold tracking-tight text-zinc-900 mb-3">Community & Inquiries</h2>
+            <p class="text-sm text-zinc-600 leading-relaxed mb-6">
+              Have suggestions for new sign language lexicons, educational curricula, or accessibility improvements? We welcome feedback from educators and community advocates.
+            </p>
+
+            <div class="space-y-3 text-xs font-mono text-zinc-600">
+              <div class="flex items-center gap-2">
+                <i data-lucide="mail" class="w-4 h-4 text-zinc-400"></i>
+                <span>support@gesturify.org</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <i data-lucide="map-pin" class="w-4 h-4 text-zinc-400"></i>
+                <span>Open Source Accessibility Initiative</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="lg:col-span-7">
+            <div class="p-6 bg-white border border-zinc-200 rounded-2xl shadow-sm">
+              <form id="contact-form" class="space-y-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-xs font-mono uppercase text-zinc-500 mb-1" for="contact-name">Your Name</label>
+                    <input type="text" id="contact-name" required class="input-minimal" placeholder="e.g. Alex Morgan">
+                  </div>
+                  <div>
+                    <label class="block text-xs font-mono uppercase text-zinc-500 mb-1" for="contact-email">Email Address</label>
+                    <input type="email" id="contact-email" required class="input-minimal" placeholder="alex@example.com">
+                  </div>
+                </div>
+
+                <div>
+                  <label class="block text-xs font-mono uppercase text-zinc-500 mb-1" for="contact-role">I Am A</label>
+                  <select id="contact-role" class="input-minimal">
+                    <option value="learner">Sign Language Learner</option>
+                    <option value="muted">Muted / Deaf Individual</option>
+                    <option value="educator">Accessibility Educator / Interpreter</option>
+                    <option value="developer">Developer / Researcher</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label class="block text-xs font-mono uppercase text-zinc-500 mb-1" for="contact-message">Message or Feedback</label>
+                  <textarea id="contact-message" rows="4" required class="input-minimal" placeholder="Share your suggestions, feature requests, or questions..."></textarea>
+                </div>
+
+                <button type="submit" class="btn-primary w-full sm:w-auto">
+                  <i data-lucide="send" class="w-4 h-4"></i>
+                  <span>Submit Feedback</span>
+                </button>
+              </form>
+
+              <div id="contact-success-msg" class="hidden mt-4 p-3 bg-zinc-100 border border-zinc-300 rounded-lg text-xs font-mono text-zinc-800">
+                ✓ Thank you for reaching out! Your message has been received.
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="border-t border-zinc-200 bg-white py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-500 font-mono">
+      <div class="flex items-center gap-2">
+        <span class="font-bold text-zinc-900 font-mono">Gesturify</span>
+        <span>© 2026. Minimalist Assistive Communication.</span>
+      </div>
+      <div class="flex gap-4">
+        <a href="#learner" class="hover:underline">Practice Hub</a>
+        <a href="#translation" class="hover:underline">Translation</a>
+        <a href="#about" class="hover:underline">About</a>
+        <a href="#contact" class="hover:underline">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ==================== AUTH MODAL ("MANATO TECHNIQUE") ==================== -->
+  <div id="auth-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="auth-modal-title">
+    <div class="modal-container p-6 sm:p-8">
+      
+      <div class="flex items-center justify-between pb-4 border-b border-zinc-200 mb-6">
+        <div>
+          <h3 id="auth-modal-title" class="text-lg font-bold text-zinc-900">Authentication Portal</h3>
+          <p class="text-xs font-mono text-zinc-500">Manato Optical Landmark Verification</p>
+        </div>
+        <button id="close-auth-modal" type="button" class="p-1 rounded-md text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100" aria-label="Close dialog">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Manato Technique Verification Box -->
+      <div class="p-5 border border-zinc-200 rounded-xl bg-zinc-50 mb-6 text-center space-y-3">
+        <div class="w-12 h-12 rounded-full border border-zinc-300 bg-white mx-auto flex items-center justify-center text-zinc-900">
+          <i data-lucide="scan" class="w-6 h-6"></i>
+        </div>
+        <h4 class="font-bold text-sm text-zinc-900">Manato Gestural Key Technique</h4>
+        <p class="text-xs text-zinc-600 leading-normal max-w-xs mx-auto">
+          Authenticate instantly by holding your personalized sign landmark passcode in front of the lens.
+        </p>
+        <div id="manato-status-text" class="text-xs font-mono text-zinc-500 py-1">
+          Hold custom sign gesture to authenticate
+        </div>
+        <button id="btn-manato-verify" type="button" class="btn-primary w-full text-xs">
+          <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
+          <span>Simulate Manato Sign Verification</span>
+        </button>
+      </div>
+
+      <div class="relative flex items-center justify-center mb-6">
+        <div class="border-t border-zinc-200 w-full"></div>
+        <span class="bg-white px-2 text-xs font-mono text-zinc-400 absolute">OR STANDARD PASSKEY</span>
+      </div>
+
+      <!-- Standard Form -->
+      <form onsubmit="event.preventDefault(); alert('Logged in successfully!'); document.getElementById('auth-modal').classList.remove('open');" class="space-y-3">
+        <div>
+          <label class="block text-xs font-mono text-zinc-500 mb-1">Email or Passkey ID</label>
+          <input type="text" required class="input-minimal" placeholder="user@gesturify.org">
+        </div>
+        <div>
+          <label class="block text-xs font-mono text-zinc-500 mb-1">Access Token</label>
+          <input type="password" required class="input-minimal" placeholder="••••••••••••">
+        </div>
+        <button type="submit" class="btn-secondary w-full text-xs sm:text-sm">
+          Continue with Credentials
+        </button>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- Main JavaScript Logic -->
+  <script src="app.js"></script>
+</body>
+</html>
