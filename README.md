@@ -1,4 +1,4 @@
-# Gesturify AI — Turborepo Monorepo
+# Gesturify
 
 Real-Time Indian Sign Language (ISL) Interpreter, Technical Documentation Portal, and Telemetry Admin Intelligence Dashboard powered by **Next.js 16**, **React 19**, **Turborepo**, **pnpm workspaces**, **Tailwind CSS v4**, **shadcn/ui**, and **Lenis**.
 
@@ -94,4 +94,4 @@ HackNext/
 ## 📄 License
 
 MIT License. Built for accessibility and inclusive communication.
-"# HackNextS2"
+"# Graphify"
