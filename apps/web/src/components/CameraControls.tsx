@@ -28,7 +28,6 @@ export const CameraControls: React.FC<CameraControlsProps> = ({
   onSwitchModel,
 }) => {
   const isRunning = status === "active";
-
   return (
     <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 rounded-2xl glass-panel border border-cyan-500/20 text-sm">
       {/* Left controls: Camera switch & toggles */}
@@ -65,7 +64,9 @@ export const CameraControls: React.FC<CameraControlsProps> = ({
         >
           <SwitchCamera className="w-4 h-4 text-cyan-400" />
           <span>
-            {facingMode === "environment" ? "Rear (ISL View)" : "Front (Selfie)"}
+            {facingMode === "environment"
+              ? "Rear (ISL View)"
+              : "Front (Selfie)"}
           </span>
         </button>
 

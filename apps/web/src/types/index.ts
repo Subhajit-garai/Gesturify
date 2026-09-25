@@ -52,6 +52,7 @@ export type CameraStatus =
   | "idle"
   | "requesting"
   | "active"
+  | "paused"
   | "denied"
   | "not-found"
   | "busy"

@@ -9,7 +9,9 @@ export function useCamera() {
   const [status, setStatus] = useState<CameraStatus>("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
-  const [activeDeviceId, setActiveDeviceId] = useState<string | undefined>(undefined);
+  const [activeDeviceId, setActiveDeviceId] = useState<string | undefined>(
+    undefined,
+  );
   const [resolution, setResolution] = useState<string>("1280x720");
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -45,7 +47,7 @@ export function useCamera() {
         }
       }
     },
-    [facingMode, activeDeviceId]
+    [facingMode, activeDeviceId],
   );
 
   const toggleFacingMode = useCallback(async () => {
@@ -61,8 +63,13 @@ export function useCamera() {
       setActiveDeviceId(deviceId);
       await startCamera(facingMode, deviceId);
     },
-    [facingMode, startCamera]
+    [facingMode, startCamera],
   );
+
+  const pauseCamera = useCallback(() => {
+    cameraService.stopCamera();
+    setStatus("paused");
+  }, []);
 
   const stopCamera = useCallback(() => {
     cameraService.stopCamera();
@@ -86,6 +93,7 @@ export function useCamera() {
     resolution,
     startCamera,
     stopCamera,
+    pauseCamera,
     toggleFacingMode,
     selectDevice,
   };

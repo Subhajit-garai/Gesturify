@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useCamera } from "@/hooks/useCamera";
 import { useMediaPipe } from "@/hooks/useMediaPipe";
 import { useSignRecognition } from "@/hooks/useSignRecognition";
@@ -28,6 +28,7 @@ import {
 export default function GesturifyApp() {
   const [activeMode, setActiveMode] = useState<AppMode>("sign-to-speech");
   const [isDictionaryOpen, setIsDictionaryOpen] = useState(false);
+  const hasAutoStartedRef = useRef(false);
 
   // 1. Camera Hook
   const {
@@ -40,6 +41,7 @@ export default function GesturifyApp() {
     resolution,
     startCamera,
     stopCamera,
+    pauseCamera,
     toggleFacingMode,
     selectDevice,
   } = useCamera();
@@ -66,18 +68,19 @@ export default function GesturifyApp() {
     forceDemoSign,
   } = useSignRecognition(latestFrame, visionLatency, resolution);
 
-  // Auto-start rear camera on mount if in sign-to-speech mode
+  // Auto-start rear camera once on initial mount if in sign-to-speech mode
   useEffect(() => {
-    if (activeMode === "sign-to-speech" && cameraStatus === "idle") {
+    if (!hasAutoStartedRef.current && activeMode === "sign-to-speech") {
+      hasAutoStartedRef.current = true;
       startCamera("environment");
     }
-  }, [activeMode, cameraStatus, startCamera]);
+  }, [activeMode, startCamera]);
 
   const handleToggleStream = () => {
     if (cameraStatus === "active") {
-      stopCamera();
+      pauseCamera();
     } else {
-      startCamera(facingMode);
+      startCamera(facingMode, activeDeviceId);
     }
   };
 
@@ -111,7 +114,12 @@ export default function GesturifyApp() {
           {/* Mode Navigation Switcher */}
           <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-surface-dark border border-slate-700/80">
             <button
-              onClick={() => setActiveMode("sign-to-speech")}
+              onClick={() => {
+                setActiveMode("sign-to-speech");
+                if (cameraStatus !== "active" && cameraStatus !== "paused") {
+                  startCamera(facingMode, activeDeviceId);
+                }
+              }}
               className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                 activeMode === "sign-to-speech"
                   ? "bg-gradient-to-r from-cyan-500 to-emerald-500 text-surface-darker font-bold shadow-md shadow-cyan-500/25"
@@ -178,7 +186,7 @@ export default function GesturifyApp() {
                 errorMessage={cameraError}
                 facingMode={facingMode}
                 frameResult={latestFrame}
-                onRetry={() => startCamera(facingMode)}
+                onRetry={() => startCamera(facingMode, activeDeviceId)}
                 fps={metrics.fps}
               />
 
