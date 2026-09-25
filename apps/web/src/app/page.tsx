@@ -228,7 +228,9 @@ export default function GesturifyApp() {
           <div className="flex items-center gap-2 text-emerald-400/90 font-medium">
             <ShieldCheck className="w-4 h-4 shrink-0 text-emerald-400" />
             <span>
-              Privacy Guaranteed: Your camera video is processed 100% locally in your browser. Video is never uploaded or saved to any cloud server.
+              Privacy Guaranteed: Your camera video is processed 100% locally in
+              your browser. Video is never uploaded or saved to any cloud
+              server.
             </span>
           </div>
 
