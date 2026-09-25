@@ -1,0 +1,3 @@
+module.exports=[15917,a=>{"use strict";var b=a.i(16223);a.s(["default",0,function({children:a}){return(0,b.jsx)("html",{lang:"en",className:"dark",children:(0,b.jsx)("body",{className:"min-h-screen bg-[#060913] text-slate-100 antialiased selection:bg-cyan-500 selection:text-slate-900",children:a})})},"metadata",0,{title:"SignBridge AI Documentation — Architecture, Flows & API Reference",description:"Comprehensive technical documentation covering execution flows, modules, files, and function APIs across the SignBridge real-time sign language interpreter."}])},22874,function(a){a.n(a.i(15917))}];
+
+//# sourceMappingURL=apps_docs_src_app_layout_tsx_0notox6._.js.map

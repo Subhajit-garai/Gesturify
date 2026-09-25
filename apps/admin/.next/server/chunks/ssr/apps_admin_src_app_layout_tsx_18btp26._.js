@@ -1,0 +1,3 @@
+module.exports=[23227,a=>{"use strict";var b=a.i(16223);a.s(["default",0,function({children:a}){return(0,b.jsx)("html",{lang:"en",className:"dark",children:(0,b.jsx)("body",{className:"min-h-screen bg-[#060913] text-slate-100 antialiased selection:bg-rose-500 selection:text-white",children:a})})},"metadata",0,{title:"SignBridge AI Admin — Telemetry & Log Analytics",description:"Administrator control center for reviewing application execution logs, camera error diagnostics, model fallback events, and real-time client performance."}])},19858,function(a){a.n(a.i(23227))}];
+
+//# sourceMappingURL=apps_admin_src_app_layout_tsx_18btp26._.js.map

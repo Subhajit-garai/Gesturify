@@ -1,0 +1,20 @@
+{
+  "name": "signbridge-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "turbo dev",
+    "dev:web": "turbo dev --filter=@signbridge/web",
+    "dev:docs": "turbo dev --filter=@signbridge/docs",
+    "dev:admin": "turbo dev --filter=@signbridge/admin",
+    "build": "turbo build",
+    "build:web": "turbo build --filter=@signbridge/web",
+    "build:docs": "turbo build --filter=@signbridge/docs",
+    "build:admin": "turbo build --filter=@signbridge/admin",
+    "lint": "turbo lint"
+  },
+  "devDependencies": {
+    "turbo": "^2.4.4"
+  },
+  "packageManager": "pnpm@10.24.0"
+}
