@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  allowedDevOrigins: ['10.223.159.115'],
   reactStrictMode: false,
   turbopack: {},
   webpack: (config, { isServer }) => {

@@ -78,4 +78,4 @@ export interface SmoothingConfig {
   cooldownMs: number; // e.g. 1200ms
 }
 
-export type AppMode = "sign-to-speech" | "speech-to-sign" | "sign-dictionary";
+export type AppMode = "sign-to-speech" | "speech-to-sign" | "sign-dictionary" | "video-learning";
