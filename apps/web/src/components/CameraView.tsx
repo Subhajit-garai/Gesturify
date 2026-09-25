@@ -12,6 +12,8 @@ import {
   Shield,
   Layers,
   Sparkles,
+  Video,
+  VideoOff,
 } from "lucide-react";
 
 interface CameraViewProps {
@@ -92,12 +94,18 @@ export const CameraView: React.FC<CameraViewProps> = ({
               className={`w-2 h-2 rounded-full ${
                 status === "active"
                   ? "bg-emerald-400 animate-pulse"
+                  : status === "paused"
+                  ? "bg-amber-400"
                   : "bg-amber-400 animate-ping"
               }`}
             />
             {status === "active" ? (
               <span className="uppercase tracking-wider font-semibold">
                 LIVE {facingMode === "environment" ? "REAR CAM" : "FRONT CAM"}
+              </span>
+            ) : status === "paused" ? (
+              <span className="uppercase tracking-wider font-semibold text-amber-300">
+                PAUSED
               </span>
             ) : (
               <span>CONNECTING...</span>
@@ -173,6 +181,26 @@ export const CameraView: React.FC<CameraViewProps> = ({
           >
             <RefreshCw className="w-4 h-4" />
             Retry Camera Access
+          </button>
+        </div>
+      )}
+
+      {/* Paused Stream Overlay */}
+      {status === "paused" && (
+        <div className="absolute inset-0 bg-surface-darker/85 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center z-30">
+          <div className="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center mb-4 text-amber-400 shadow-inner">
+            <VideoOff className="w-8 h-8" />
+          </div>
+          <h3 className="text-xl font-bold text-white mb-1">Camera Paused</h3>
+          <p className="text-slate-400 text-sm max-w-sm mb-6">
+            Camera video feed and gesture recognition are currently paused.
+          </p>
+          <button
+            onClick={onRetry}
+            className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-white font-semibold text-sm transition-all shadow-lg cursor-pointer"
+          >
+            <Video className="w-4 h-4" />
+            Resume Camera
           </button>
         </div>
       )}
