@@ -13,6 +13,7 @@ import { StatusIndicator } from "@/components/StatusIndicator";
 import { SupportedSignsModal } from "@/components/SupportedSignsModal";
 import { ReverseAvatarMode } from "@/components/ReverseAvatarMode";
 import { DemoModeBar } from "@/components/DemoModeBar";
+import { VideoLearningSection } from "@/components/VideoLearningSection";
 import { AppMode } from "@/types";
 import {
   Hand,
@@ -23,6 +24,7 @@ import {
   Sparkles,
   Info,
   HelpCircle,
+  Video,
 } from "lucide-react";
 
 export default function GesturifyApp() {
@@ -144,6 +146,21 @@ export default function GesturifyApp() {
               <Mic className="w-3.5 h-3.5" />
               <span>Speech → Sign Avatar</span>
             </button>
+
+            <button
+              onClick={() => {
+                setActiveMode("video-learning");
+                stopCamera();
+              }}
+              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                activeMode === "video-learning"
+                  ? "bg-gradient-to-r from-rose-500 to-amber-500 text-white font-bold shadow-md shadow-rose-500/25"
+                  : "text-slate-400 hover:text-slate-200"
+              }`}
+            >
+              <Video className="w-3.5 h-3.5" />
+              <span>Learn with Videos</span>
+            </button>
           </div>
 
           {/* Action buttons */}
@@ -162,18 +179,22 @@ export default function GesturifyApp() {
       {/* Main Content Area */}
       <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 pt-4 flex-1 space-y-4">
         {/* Status Pipeline Checklist */}
-        <StatusIndicator
-          cameraReady={cameraStatus === "active"}
-          visionReady={isVisionReady}
-          modelReady={true}
-          stageMessage={loadingStage}
-        />
+        {activeMode === "sign-to-speech" && (
+          <StatusIndicator
+            cameraReady={cameraStatus === "active"}
+            visionReady={isVisionReady}
+            modelReady={true}
+            stageMessage={loadingStage}
+          />
+        )}
 
         {/* Demo Mode Quick Toolbar */}
-        <DemoModeBar
-          onTriggerSign={forceDemoSign}
-          onOpenDictionary={() => setIsDictionaryOpen(true)}
-        />
+        {activeMode === "sign-to-speech" && (
+          <DemoModeBar
+            onTriggerSign={forceDemoSign}
+            onOpenDictionary={() => setIsDictionaryOpen(true)}
+          />
+        )}
 
         {/* Mode 1: Sign Language -> Speech (Camera Mode) */}
         {activeMode === "sign-to-speech" && (
@@ -230,6 +251,18 @@ export default function GesturifyApp() {
 
         {/* Mode 2: Reverse Speech-to-Sign Avatar Mode */}
         {activeMode === "speech-to-sign" && <ReverseAvatarMode />}
+
+        {/* Mode 3: Video Learning & Interactive Transcripts */}
+        {activeMode === "video-learning" && (
+          <VideoLearningSection
+            onPracticeSign={(_signId) => {
+              setActiveMode("sign-to-speech");
+              if (cameraStatus !== "active" && cameraStatus !== "paused") {
+                startCamera(facingMode, activeDeviceId);
+              }
+            }}
+          />
+        )}
 
         {/* Privacy & Technical Disclosure Banner */}
         <footer className="pt-6 border-t border-slate-800/80 text-xs text-slate-400 flex flex-col sm:flex-row items-center justify-between gap-3">
