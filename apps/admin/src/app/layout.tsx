@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "SignBridge AI Admin — Telemetry & Log Analytics",
+  title: "Gesturify AI Admin — Telemetry & Log Analytics",
   description:
     "Administrator control center for reviewing application execution logs, camera error diagnostics, model fallback events, and real-time client performance.",
 };

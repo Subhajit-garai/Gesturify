@@ -1,5 +1,5 @@
 
-> @signbridge/web@1.0.0 build P:\TempProject\HackNext\apps\web
+> @gesturify/web@1.0.0 build P:\TempProject\HackNext\apps\web
 > next build --webpack
 
 ▲ Next.js 16.3.6 (webpack)

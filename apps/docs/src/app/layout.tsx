@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "SignBridge AI Documentation — Architecture, Flows & API Reference",
+  title: "Gesturify AI Documentation — Architecture, Flows & API Reference",
   description:
-    "Comprehensive technical documentation covering execution flows, modules, files, and function APIs across the SignBridge real-time sign language interpreter.",
+    "Comprehensive technical documentation covering execution flows, modules, files, and function APIs across the Gesturify real-time sign language interpreter.",
 };
 
 export default function RootLayout({

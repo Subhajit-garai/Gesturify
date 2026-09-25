@@ -25,7 +25,7 @@ import {
   HelpCircle,
 } from "lucide-react";
 
-export default function SignBridgeApp() {
+export default function GesturifyApp() {
   const [activeMode, setActiveMode] = useState<AppMode>("sign-to-speech");
   const [isDictionaryOpen, setIsDictionaryOpen] = useState(false);
 
@@ -96,7 +96,7 @@ export default function SignBridgeApp() {
             <div>
               <div className="flex items-center gap-2">
                 <h1 className="text-lg font-black tracking-tight text-white">
-                  SignBridge <span className="text-cyan-400">AI</span>
+                  Gesturify <span className="text-cyan-400">AI</span>
                 </h1>
                 <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-cyan-500/10 text-cyan-300 border border-cyan-500/30">
                   ISL EDITION

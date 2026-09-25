@@ -1,27 +1,27 @@
 {
-  "projectName": "SignBridge AI Monorepo (Turborepo + pnpm)",
+  "projectName": "Gesturify AI Monorepo (Turborepo + pnpm)",
   "version": "1.0.0",
   "architecture": "Turborepo + pnpm workspaces (apps/web, apps/docs, apps/admin)",
   "framework": "Next.js 16+ (Latest, App Router, React 19, TypeScript, Tailwind CSS v4, shadcn/ui, Lenis)",
   "lastUpdated": "2026-09-25T16:07:00+05:30",
-  "summary": "Monorepo transformation complete. 3 workspace apps (@signbridge/web, @signbridge/docs, @signbridge/admin) built and verified with Turborepo.",
+  "summary": "Monorepo transformation complete. 3 workspace apps (@gesturify/web, @gesturify/docs, @gesturify/admin) built and verified with Turborepo.",
   "workspaces": [
     {
-      "name": "@signbridge/web",
+      "name": "@gesturify/web",
       "path": "apps/web",
       "port": 3000,
       "purpose": "Real-time Indian Sign Language (ISL) browser interpreter using rear camera, MediaPipe, ONNX, and Web Speech.",
       "status": "production_ready"
     },
     {
-      "name": "@signbridge/docs",
+      "name": "@gesturify/docs",
       "path": "apps/docs",
       "port": 3001,
       "purpose": "Interactive technical documentation detailing end-to-end dataflow, architecture, and function APIs across every file.",
       "status": "production_ready"
     },
     {
-      "name": "@signbridge/admin",
+      "name": "@gesturify/admin",
       "path": "apps/admin",
       "port": 3002,
       "purpose": "Admin telemetry and log intelligence dashboard summarizing component health, camera errors, model fallbacks, and real-time logs.",
@@ -39,7 +39,7 @@
     },
     {
       "id": "M02",
-      "category": "Web Application (@signbridge/web)",
+      "category": "Web Application (@gesturify/web)",
       "title": "Migrate sign language interpreter to apps/web with shadcn/ui and Lenis",
       "status": "completed",
       "files": [
@@ -55,7 +55,7 @@
     },
     {
       "id": "M03",
-      "category": "Documentation Portal (@signbridge/docs)",
+      "category": "Documentation Portal (@gesturify/docs)",
       "title": "Create comprehensive documentation portal for web dataflow & function APIs",
       "status": "completed",
       "files": [
@@ -67,7 +67,7 @@
     },
     {
       "id": "M04",
-      "category": "Admin Intelligence Dashboard (@signbridge/admin)",
+      "category": "Admin Intelligence Dashboard (@gesturify/admin)",
       "title": "Create admin control center with log file summaries and diagnostics",
       "status": "completed",
       "files": [
@@ -82,7 +82,7 @@
       "title": "Verify production builds for all workspace packages using Turborepo",
       "status": "completed",
       "files": ["turbo.json", "package.json"],
-      "description": "Validated turbo build across @signbridge/web, @signbridge/docs, and @signbridge/admin with zero TypeScript or bundling errors."
+      "description": "Validated turbo build across @gesturify/web, @gesturify/docs, and @gesturify/admin with zero TypeScript or bundling errors."
     }
   ]
 }

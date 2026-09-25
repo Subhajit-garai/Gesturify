@@ -3,7 +3,7 @@ import { SmoothScrollProvider } from "@/components/SmoothScrollProvider";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "SignBridge AI - Real-Time Indian Sign Language (ISL) Interpreter",
+  title: "Gesturify AI - Real-Time Indian Sign Language (ISL) Interpreter",
   description:
     "Web-based real-time Indian Sign Language (ISL) interpreter converting rear-camera hand and body gestures into text and spoken voice with 100% on-device privacy.",
   keywords: [
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     "Accessibility",
     "Assistive Technology",
   ],
-  authors: [{ name: "SignBridge AI Team" }],
+  authors: [{ name: "Gesturify AI Team" }],
 };
 
 export const viewport: Viewport = {

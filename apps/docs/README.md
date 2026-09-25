@@ -1,6 +1,6 @@
-# SignBridge AI — Documentation Portal (`@signbridge/docs`)
+# Gesturify AI — Documentation Portal (`@gesturify/docs`)
 
-This package is the technical documentation portal for the **SignBridge AI** monorepo.
+This package is the technical documentation portal for the **Gesturify AI** monorepo.
 
 ## 🚀 Running the Docs Portal
 
@@ -9,7 +9,7 @@ This package is the technical documentation portal for the **SignBridge AI** mon
 pnpm run dev:docs
 
 # Or with Turbo:
-turbo dev --filter=@signbridge/docs
+turbo dev --filter=@gesturify/docs
 ```
 
 Open [http://localhost:3001](http://localhost:3001) in your browser.

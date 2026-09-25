@@ -1,4 +1,4 @@
-# SignBridge AI — Turborepo Monorepo
+# Gesturify AI — Turborepo Monorepo
 
 Real-Time Indian Sign Language (ISL) Interpreter, Technical Documentation Portal, and Telemetry Admin Intelligence Dashboard powered by **Next.js 16**, **React 19**, **Turborepo**, **pnpm workspaces**, **Tailwind CSS v4**, **shadcn/ui**, and **Lenis**.
 
@@ -6,11 +6,11 @@ Real-Time Indian Sign Language (ISL) Interpreter, Technical Documentation Portal
 
 ## 📦 Workspace Applications
 
-| Package | Directory | Default Port | Description |
-| :--- | :--- | :--- | :--- |
-| **`@signbridge/web`** | [`apps/web`](file:///p:/TempProject/HackNext/apps/web) | `http://localhost:3000` | Real-time Indian Sign Language (ISL) browser interpreter using rear camera, MediaPipe Tasks Vision, ONNX Runtime Web, and Web Speech API. |
-| **`@signbridge/docs`** | [`apps/docs`](file:///p:/TempProject/HackNext/apps/docs) | `http://localhost:3001` | Technical documentation portal explaining the 8-stage execution flow, architecture, and function API catalog for every file. |
-| **`@signbridge/admin`** | [`apps/admin`](file:///p:/TempProject/HackNext/apps/admin) | `http://localhost:3002` | Admin intelligence dashboard with log file summaries, component usage telemetry, and camera/model error diagnostic resolutions. |
+| Package                | Directory                                                  | Default Port            | Description                                                                                                                               |
+| :--------------------- | :--------------------------------------------------------- | :---------------------- | :---------------------------------------------------------------------------------------------------------------------------------------- |
+| **`@gesturify/web`**   | [`apps/web`](file:///p:/TempProject/HackNext/apps/web)     | `http://localhost:3000` | Real-time Indian Sign Language (ISL) browser interpreter using rear camera, MediaPipe Tasks Vision, ONNX Runtime Web, and Web Speech API. |
+| **`@gesturify/docs`**  | [`apps/docs`](file:///p:/TempProject/HackNext/apps/docs)   | `http://localhost:3001` | Technical documentation portal explaining the 8-stage execution flow, architecture, and function API catalog for every file.              |
+| **`@gesturify/admin`** | [`apps/admin`](file:///p:/TempProject/HackNext/apps/admin) | `http://localhost:3002` | Admin intelligence dashboard with log file summaries, component usage telemetry, and camera/model error diagnostic resolutions.           |
 
 ---
 
@@ -94,4 +94,4 @@ HackNext/
 ## 📄 License
 
 MIT License. Built for accessibility and inclusive communication.
-"# HackNextS2" 
+"# HackNextS2"

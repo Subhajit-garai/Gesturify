@@ -47,24 +47,28 @@ const INITIAL_LOG_SUMMARIES: ComponentSummary[] = [
     totalEvents: 4210,
     errorCount: 68,
     activePath: "apps/web/src/vision/camera.ts",
-    description: "Captures 1280x720 video feed. Uses facingMode: 'environment' (rear camera) with fallback to front camera.",
+    description:
+      "Captures 1280x720 video feed. Uses facingMode: 'environment' (rear camera) with fallback to front camera.",
     commonErrors: [
       {
         error: "NotAllowedError / PermissionDeniedError",
         count: 52,
-        resolution: "User denied browser camera prompt. Display in-app permission banner prompting settings unlock."
+        resolution:
+          "User denied browser camera prompt. Display in-app permission banner prompting settings unlock.",
       },
       {
         error: "NotFoundError (No environment camera found)",
         count: 14,
-        resolution: "Occurs on laptops without rear cameras. Successfully fell back to default front camera."
+        resolution:
+          "Occurs on laptops without rear cameras. Successfully fell back to default front camera.",
       },
       {
         error: "TrackStartError / DeviceBusy",
         count: 2,
-        resolution: "Camera occupied by Zoom/Teams. Prompt user to close other apps."
-      }
-    ]
+        resolution:
+          "Camera occupied by Zoom/Teams. Prompt user to close other apps.",
+      },
+    ],
   },
   {
     component: "MediaPipe Vision Landmark Detector",
@@ -72,14 +76,16 @@ const INITIAL_LOG_SUMMARIES: ComponentSummary[] = [
     totalEvents: 18450,
     errorCount: 12,
     activePath: "apps/web/src/vision/mediaPipe.ts",
-    description: "Processes 21 hand landmarks per hand and 7 upper pose points using WebAssembly FilesetResolver.",
+    description:
+      "Processes 21 hand landmarks per hand and 7 upper pose points using WebAssembly FilesetResolver.",
     commonErrors: [
       {
         error: "GPU Delegate WebGL Context Creation Warning",
         count: 12,
-        resolution: "Low-end mobile GPU lacked FP16 precision. Automatically fell back to CPU WASM delegate without crashing."
-      }
-    ]
+        resolution:
+          "Low-end mobile GPU lacked FP16 precision. Automatically fell back to CPU WASM delegate without crashing.",
+      },
+    ],
   },
   {
     component: "ONNX Runtime & Temporal Recognizer",
@@ -87,14 +93,16 @@ const INITIAL_LOG_SUMMARIES: ComponentSummary[] = [
     totalEvents: 8920,
     errorCount: 5,
     activePath: "apps/web/src/models/ONNXSignModel.ts",
-    description: "Executes 30-frame temporal gesture sequence [30, 147]. Falls back to GeometricHeuristicClassifier if model file isn't uploaded.",
+    description:
+      "Executes 30-frame temporal gesture sequence [30, 147]. Falls back to GeometricHeuristicClassifier if model file isn't uploaded.",
     commonErrors: [
       {
         error: "Default ONNX weights 404 (File not found)",
         count: 5,
-        resolution: "Custom user ONNX file not yet placed in public/models/. Seamlessly switched to Geometric Classifier."
-      }
-    ]
+        resolution:
+          "Custom user ONNX file not yet placed in public/models/. Seamlessly switched to Geometric Classifier.",
+      },
+    ],
   },
   {
     component: "Web Speech API (TTS & STT)",
@@ -102,15 +110,17 @@ const INITIAL_LOG_SUMMARIES: ComponentSummary[] = [
     totalEvents: 1320,
     errorCount: 3,
     activePath: "apps/web/src/speech/textToSpeech.ts",
-    description: "SpeechSynthesis for voice output and webkitSpeechRecognition for reverse communication avatar.",
+    description:
+      "SpeechSynthesis for voice output and webkitSpeechRecognition for reverse communication avatar.",
     commonErrors: [
       {
         error: "SpeechSynthesis interrupted (rapid speak trigger)",
         count: 3,
-        resolution: "Added window.speechSynthesis.cancel() before each utterance to prevent queue collision."
-      }
-    ]
-  }
+        resolution:
+          "Added window.speechSynthesis.cancel() before each utterance to prevent queue collision.",
+      },
+    ],
+  },
 ];
 
 const RAW_LOGS: LogEntry[] = [
@@ -119,8 +129,10 @@ const RAW_LOGS: LogEntry[] = [
     timestamp: "2026-09-25 15:48:12",
     level: "SUCCESS",
     component: "VISION",
-    message: "MediaPipe HandLandmarker initialized with GPU delegate (21 landmarks, 2 hands active)",
-    affectedUserAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/130.0.0.0",
+    message:
+      "MediaPipe HandLandmarker initialized with GPU delegate (21 landmarks, 2 hands active)",
+    affectedUserAgent:
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/130.0.0.0",
   },
   {
     id: "LOG-1048",
@@ -128,16 +140,20 @@ const RAW_LOGS: LogEntry[] = [
     level: "INFO",
     component: "CAMERA",
     message: "Rear camera stream started with resolution 1280x720 @ 30 FPS",
-    affectedUserAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/130.0.0.0",
+    affectedUserAgent:
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/130.0.0.0",
   },
   {
     id: "LOG-1047",
     timestamp: "2026-09-25 15:46:33",
     level: "WARN",
     component: "MODEL",
-    message: "Optional ONNX model weights not present at /models/isl_temporal_model.onnx. Utilizing Geometric Heuristic Classifier.",
-    details: "Geometric Classifier active with 16 ISL vocabulary gestures and 30-frame sequence trajectory.",
-    affectedUserAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) Safari/605.1.15",
+    message:
+      "Optional ONNX model weights not present at /models/isl_temporal_model.onnx. Utilizing Geometric Heuristic Classifier.",
+    details:
+      "Geometric Classifier active with 16 ISL vocabulary gestures and 30-frame sequence trajectory.",
+    affectedUserAgent:
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) Safari/605.1.15",
   },
   {
     id: "LOG-1046",
@@ -145,16 +161,20 @@ const RAW_LOGS: LogEntry[] = [
     level: "ERROR",
     component: "CAMERA",
     message: "NotAllowedError: Camera permission was denied by user",
-    details: "User clicked 'Block' on browser camera prompt. Triggered in-app permission diagnostic banner.",
-    affectedUserAgent: "Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15",
+    details:
+      "User clicked 'Block' on browser camera prompt. Triggered in-app permission diagnostic banner.",
+    affectedUserAgent:
+      "Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15",
   },
   {
     id: "LOG-1045",
     timestamp: "2026-09-25 15:44:02",
     level: "SUCCESS",
     component: "SPEECH",
-    message: "Text-to-Speech synthesized 'I need drinking water.' using en-IN Indian English voice",
-    affectedUserAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/130.0.0.0",
+    message:
+      "Text-to-Speech synthesized 'I need drinking water.' using en-IN Indian English voice",
+    affectedUserAgent:
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/130.0.0.0",
   },
   {
     id: "LOG-1044",
@@ -163,7 +183,7 @@ const RAW_LOGS: LogEntry[] = [
     component: "VISION",
     message: "Sign confirmed: WATER (Confidence: 94%, Stability Lock: 100%)",
     affectedUserAgent: "Mozilla/5.0 (Android 14; Mobile) Chrome/129.0.0.0",
-  }
+  },
 ];
 
 export default function AdminPage() {
@@ -174,11 +194,13 @@ export default function AdminPage() {
 
   const filteredLogs = RAW_LOGS.filter((log) => {
     const matchesLevel = selectedLevel === "ALL" || log.level === selectedLevel;
-    const matchesComp = selectedComp === "ALL" || log.component === selectedComp;
+    const matchesComp =
+      selectedComp === "ALL" || log.component === selectedComp;
     const matchesSearch =
       log.message.toLowerCase().includes(searchTerm.toLowerCase()) ||
       log.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (log.details && log.details.toLowerCase().includes(searchTerm.toLowerCase()));
+      (log.details &&
+        log.details.toLowerCase().includes(searchTerm.toLowerCase()));
     return matchesLevel && matchesComp && matchesSearch;
   });
 
@@ -190,13 +212,13 @@ export default function AdminPage() {
         logs: RAW_LOGS,
       },
       null,
-      2
+      2,
     );
     const blob = new Blob([data], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `signbridge-telemetry-report-${Date.now()}.json`;
+    a.download = `gesturify-telemetry-report-${Date.now()}.json`;
     a.click();
   };
 
@@ -212,14 +234,16 @@ export default function AdminPage() {
             <div>
               <div className="flex items-center gap-2">
                 <h1 className="text-lg font-bold text-white">
-                  SignBridge AI <span className="text-rose-400">Admin Intelligence</span>
+                  Gesturify AI{" "}
+                  <span className="text-rose-400">Admin Intelligence</span>
                 </h1>
                 <span className="text-[10px] px-2 py-0.5 rounded-full bg-rose-500/10 text-rose-300 border border-rose-500/30 font-mono">
                   LOG SUMMARIES & DIAGNOSTICS
                 </span>
               </div>
               <p className="text-xs text-slate-400">
-                Log analysis, component health diagnostics, and error resolutions
+                Log analysis, component health diagnostics, and error
+                resolutions
               </p>
             </div>
           </div>
@@ -251,27 +275,51 @@ export default function AdminPage() {
         {/* KPI Scorecard */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="p-5 rounded-2xl glass-panel border border-cyan-500/20">
-            <span className="text-xs text-slate-400 block mb-1">Total Monitored Sessions</span>
-            <div className="text-2xl font-bold font-mono text-cyan-400">32,900</div>
-            <span className="text-[11px] text-emerald-400 mt-1 block">99.7% Success Rate</span>
+            <span className="text-xs text-slate-400 block mb-1">
+              Total Monitored Sessions
+            </span>
+            <div className="text-2xl font-bold font-mono text-cyan-400">
+              32,900
+            </div>
+            <span className="text-[11px] text-emerald-400 mt-1 block">
+              99.7% Success Rate
+            </span>
           </div>
 
           <div className="p-5 rounded-2xl glass-panel border border-rose-500/20">
-            <span className="text-xs text-slate-400 block mb-1">Camera Permission Block Rate</span>
-            <div className="text-2xl font-bold font-mono text-rose-400">1.6%</div>
-            <span className="text-[11px] text-slate-400 mt-1 block">52 users blocked browser prompt</span>
+            <span className="text-xs text-slate-400 block mb-1">
+              Camera Permission Block Rate
+            </span>
+            <div className="text-2xl font-bold font-mono text-rose-400">
+              1.6%
+            </div>
+            <span className="text-[11px] text-slate-400 mt-1 block">
+              52 users blocked browser prompt
+            </span>
           </div>
 
           <div className="p-5 rounded-2xl glass-panel border border-emerald-500/20">
-            <span className="text-xs text-slate-400 block mb-1">Average Vision Latency</span>
-            <div className="text-2xl font-bold font-mono text-emerald-400">16 ms</div>
-            <span className="text-[11px] text-slate-400 mt-1 block">MediaPipe WASM-SIMD</span>
+            <span className="text-xs text-slate-400 block mb-1">
+              Average Vision Latency
+            </span>
+            <div className="text-2xl font-bold font-mono text-emerald-400">
+              16 ms
+            </div>
+            <span className="text-[11px] text-slate-400 mt-1 block">
+              MediaPipe WASM-SIMD
+            </span>
           </div>
 
           <div className="p-5 rounded-2xl glass-panel border border-violet-500/20">
-            <span className="text-xs text-slate-400 block mb-1">Active Model Pipeline</span>
-            <div className="text-2xl font-bold font-mono text-violet-400">Hybrid</div>
-            <span className="text-[11px] text-slate-400 mt-1 block">ONNX Web + Geometric Heuristic</span>
+            <span className="text-xs text-slate-400 block mb-1">
+              Active Model Pipeline
+            </span>
+            <div className="text-2xl font-bold font-mono text-violet-400">
+              Hybrid
+            </div>
+            <span className="text-[11px] text-slate-400 mt-1 block">
+              ONNX Web + Geometric Heuristic
+            </span>
           </div>
         </div>
 
@@ -298,7 +346,9 @@ export default function AdminPage() {
                   }`}
                 >
                   <div className="flex items-center justify-between mb-2">
-                    <h3 className="font-bold text-white text-base">{comp.component}</h3>
+                    <h3 className="font-bold text-white text-base">
+                      {comp.component}
+                    </h3>
                     <span
                       className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${
                         comp.status === "HEALTHY"
@@ -310,7 +360,9 @@ export default function AdminPage() {
                     </span>
                   </div>
 
-                  <p className="text-xs text-slate-300 mb-3">{comp.description}</p>
+                  <p className="text-xs text-slate-300 mb-3">
+                    {comp.description}
+                  </p>
                   <code className="text-[11px] text-cyan-400/90 font-mono block mb-4 bg-slate-900 p-1.5 rounded border border-slate-800">
                     {comp.activePath}
                   </code>
@@ -332,7 +384,9 @@ export default function AdminPage() {
                           </span>
                         </div>
                         <p className="text-slate-300 text-[11px] pt-1">
-                          <strong className="text-emerald-400">Fix / Mitigation:</strong>{" "}
+                          <strong className="text-emerald-400">
+                            Fix / Mitigation:
+                          </strong>{" "}
                           {errItem.resolution}
                         </p>
                       </div>
@@ -401,7 +455,10 @@ export default function AdminPage() {
                 const isExpanded = expandedLog === log.id;
 
                 return (
-                  <div key={log.id} className="p-4 hover:bg-slate-900/50 transition-colors">
+                  <div
+                    key={log.id}
+                    className="p-4 hover:bg-slate-900/50 transition-colors"
+                  >
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <div className="flex items-center gap-3">
                         <span
@@ -409,10 +466,10 @@ export default function AdminPage() {
                             isError
                               ? "bg-rose-500/20 text-rose-300 border-rose-500/40"
                               : isWarn
-                              ? "bg-amber-500/20 text-amber-300 border-amber-500/40"
-                              : isSuccess
-                              ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40"
-                              : "bg-cyan-500/10 text-cyan-300 border-cyan-500/30"
+                                ? "bg-amber-500/20 text-amber-300 border-amber-500/40"
+                                : isSuccess
+                                  ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40"
+                                  : "bg-cyan-500/10 text-cyan-300 border-cyan-500/30"
                           }`}
                         >
                           {log.level}
@@ -432,7 +489,9 @@ export default function AdminPage() {
                       </div>
 
                       <button
-                        onClick={() => setExpandedLog(isExpanded ? null : log.id)}
+                        onClick={() =>
+                          setExpandedLog(isExpanded ? null : log.id)
+                        }
                         className="text-xs text-slate-400 hover:text-slate-200 flex items-center gap-1 cursor-pointer"
                       >
                         <span className="font-mono text-[11px]">{log.id}</span>

@@ -14,4 +14,4 @@ f:I[8344,["/_next/static/chunks/1-b2s84pc0iqj.js"],"default",1]
 7:"$0:f:0:1:1:children:0:props:children:0:props:serverProvidedParams:params"
 c:[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]
 a:null
-e:[["$","title","0",{"children":"SignBridge AI Admin — Telemetry & Log Analytics"}],["$","meta","1",{"name":"description","content":"Administrator control center for reviewing application execution logs, camera error diagnostics, model fallback events, and real-time client performance."}]]
+e:[["$","title","0",{"children":"Gesturify AI Admin — Telemetry & Log Analytics"}],["$","meta","1",{"name":"description","content":"Administrator control center for reviewing application execution logs, camera error diagnostics, model fallback events, and real-time client performance."}]]

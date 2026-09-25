@@ -12,4 +12,4 @@ c:I[8344,["/_next/static/chunks/1-b2s84pc0iqj.js"],"default",1]
 7:C
 9:[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]
 6:null
-b:[["$","title","0",{"children":"SignBridge AI Documentation — Architecture, Flows & API Reference"}],["$","meta","1",{"name":"description","content":"Comprehensive technical documentation covering execution flows, modules, files, and function APIs across the SignBridge real-time sign language interpreter."}]]
+b:[["$","title","0",{"children":"Gesturify AI Documentation — Architecture, Flows & API Reference"}],["$","meta","1",{"name":"description","content":"Comprehensive technical documentation covering execution flows, modules, files, and function APIs across the Gesturify real-time sign language interpreter."}]]

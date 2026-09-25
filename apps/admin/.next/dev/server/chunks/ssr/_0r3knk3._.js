@@ -12,7 +12,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist
 ;
 ;
 const metadata = {
-    title: "SignBridge AI Admin — Telemetry & Log Analytics",
+    title: "Gesturify AI Admin — Telemetry & Log Analytics",
     description: "Administrator control center for reviewing application execution logs, camera error diagnostics, model fallback events, and real-time client performance."
 };
 function RootLayout({ children }) {

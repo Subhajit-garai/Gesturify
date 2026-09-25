@@ -1,1 +1,915 @@
-<!DOCTYPE html><html lang="en" class="dark"><head><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/><link rel="stylesheet" href="/_next/static/css/9c84b60add03ceab.css" data-precedence="next"/><link rel="preload" as="script" fetchPriority="low" href="/_next/static/chunks/webpack-85fd1dc37fa4476d.js"/><script src="/_next/static/chunks/d2a7acc3-52bafb6dc0d2c039.js" async=""></script><script src="/_next/static/chunks/288-42e5df8d65f384bd.js" async=""></script><script src="/_next/static/chunks/main-app-e2d4911b886d6434.js" async=""></script><script src="/_next/static/chunks/app/layout-814f5208eb8ae136.js" async=""></script><script src="/_next/static/chunks/499-fc1e23df8a74dcd7.js" async=""></script><script src="/_next/static/chunks/app/page-c91c54623f0e15ad.js" async=""></script><meta name="theme-color" content="#060913"/><title>SignBridge AI - Real-Time Indian Sign Language (ISL) Interpreter</title><meta name="description" content="Web-based real-time Indian Sign Language (ISL) interpreter converting rear-camera hand and body gestures into text and spoken voice with 100% on-device privacy."/><meta name="author" content="SignBridge AI Team"/><meta name="keywords" content="Indian Sign Language,ISL,Sign Language Interpreter,MediaPipe,Real-Time,Accessibility,Assistive Technology"/><script src="/_next/static/chunks/polyfills-42372ed130431b0a.js" noModule=""></script></head><body class="min-h-screen bg-[#060913] text-slate-100 antialiased selection:bg-cyan-500 selection:text-surface-darker"><div hidden=""><!--$--><!--/$--></div><main class="min-h-screen bg-[#060913] text-slate-100 flex flex-col pb-8"><header class="sticky top-0 z-40 bg-[#060913]/90 backdrop-blur-xl border-b border-cyan-500/20 px-4 sm:px-6 py-3"><div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 via-teal-400 to-emerald-400 p-0.5 shadow-lg shadow-cyan-500/20"><div class="w-full h-full bg-[#090d16] rounded-[10px] flex items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-hand w-5 h-5 text-cyan-400" aria-hidden="true"><path d="M18 11V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2"></path><path d="M14 10V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v2"></path><path d="M10 10.5V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2v8"></path><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"></path></svg></div></div><div><div class="flex items-center gap-2"><h1 class="text-lg font-black tracking-tight text-white">SignBridge <span class="text-cyan-400">AI</span></h1><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-cyan-500/10 text-cyan-300 border border-cyan-500/30">ISL EDITION</span></div><p class="text-[11px] text-slate-400">Real-Time Indian Sign Language Interpreter</p></div></div><div class="flex items-center gap-1.5 p-1 rounded-2xl bg-surface-dark border border-slate-700/80"><button class="flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer bg-gradient-to-r from-cyan-500 to-emerald-500 text-surface-darker font-bold shadow-md shadow-cyan-500/25"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-hand w-3.5 h-3.5" aria-hidden="true"><path d="M18 11V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2"></path><path d="M14 10V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v2"></path><path d="M10 10.5V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2v8"></path><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"></path></svg><span>Sign → Speech</span></button><button class="flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer text-slate-400 hover:text-slate-200"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-mic w-3.5 h-3.5" aria-hidden="true"><path d="M12 19v3"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><rect x="9" y="2" width="6" height="13" rx="3"></rect></svg><span>Speech → Sign Avatar</span></button></div><div class="flex items-center gap-2"><button class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium glass-panel border border-cyan-500/30 text-cyan-300 hover:text-white hover:border-cyan-400 transition-all cursor-pointer"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-book-open w-3.5 h-3.5" aria-hidden="true"><path d="M12 5v16"></path><path d="M20.001 19A2 2 0 0022 17V5a2 2 0 00-1.999-2L16 3.002A5 5 0 0012 5a5 5 0 00-4-2H4a2 2 0 00-2 2v12a2 2 0 001.999 2H8a5 5 0 014 2 5 5 0 014-2z"></path></svg><span class="hidden sm:inline">Supported Signs</span></button></div></div></header><div class="max-w-7xl mx-auto w-full px-4 sm:px-6 pt-4 flex-1 space-y-4"><div class="flex flex-wrap items-center gap-4 py-2 px-4 rounded-xl glass-panel border border-cyan-500/20 text-xs"><div class="flex items-center gap-2"><span class="font-semibold text-slate-300">Pipeline:</span><span class="px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 font-semibold flex items-center gap-1 animate-pulse"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-loader-circle lucide-loader-2 w-3 h-3 animate-spin" aria-hidden="true"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg>Initializing vision runtime...</span></div><div class="hidden md:flex items-center gap-3 border-l border-slate-700/60 pl-4"><div class="flex items-center gap-1.5 text-slate-400"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle w-3.5 h-3.5 text-slate-600" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle></svg><span class="text-slate-500">Initializing camera</span></div><div class="flex items-center gap-1.5 text-slate-400"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle w-3.5 h-3.5 text-slate-600" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle></svg><span class="text-slate-500">Loading hand &amp; pose detector</span></div><div class="flex items-center gap-1.5 text-slate-400"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-check lucide-check-circle-2 w-3.5 h-3.5 text-emerald-400" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="m16 9-5.5 5.5L8 12"></path></svg><span class="text-slate-200">Loading sign recognition model</span></div></div></div><div class="flex flex-wrap items-center justify-between gap-3 p-3.5 rounded-2xl glass-panel border border-cyan-500/20 bg-surface-darker/60 text-xs"><div class="flex items-center gap-2"><div class="p-1.5 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/30"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sparkles lucide-stars w-4 h-4" aria-hidden="true"><path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"></path><path d="M20 2v4"></path><path d="M22 4h-4"></path><circle cx="4" cy="20" r="2"></circle></svg></div><div><span class="font-bold text-slate-200">Hackathon Demo Mode:</span><span class="text-slate-400 ml-1.5 hidden sm:inline">Quickly simulate signs or test camera recognition</span></div></div><div class="flex flex-wrap items-center gap-1.5"><button class="px-2.5 py-1 rounded-lg bg-surface-dark hover:bg-cyan-950/80 text-cyan-300 hover:text-white border border-slate-700/80 hover:border-cyan-500/40 font-mono font-medium transition-all shadow-sm cursor-pointer active:scale-95">HELLO</button><button class="px-2.5 py-1 rounded-lg bg-surface-dark hover:bg-cyan-950/80 text-cyan-300 hover:text-white border border-slate-700/80 hover:border-cyan-500/40 font-mono font-medium transition-all shadow-sm cursor-pointer active:scale-95">WATER</button><button class="px-2.5 py-1 rounded-lg bg-surface-dark hover:bg-cyan-950/80 text-cyan-300 hover:text-white border border-slate-700/80 hover:border-cyan-500/40 font-mono font-medium transition-all shadow-sm cursor-pointer active:scale-95">HELP</button><button class="px-2.5 py-1 rounded-lg bg-surface-dark hover:bg-cyan-950/80 text-cyan-300 hover:text-white border border-slate-700/80 hover:border-cyan-500/40 font-mono font-medium transition-all shadow-sm cursor-pointer active:scale-95">THANK YOU</button><button class="px-2.5 py-1 rounded-lg bg-surface-dark hover:bg-cyan-950/80 text-cyan-300 hover:text-white border border-slate-700/80 hover:border-cyan-500/40 font-mono font-medium transition-all shadow-sm cursor-pointer active:scale-95">YES</button><button class="px-2.5 py-1 rounded-lg bg-surface-dark hover:bg-cyan-950/80 text-cyan-300 hover:text-white border border-slate-700/80 hover:border-cyan-500/40 font-mono font-medium transition-all shadow-sm cursor-pointer active:scale-95">NO</button><button class="px-2.5 py-1 rounded-lg bg-surface-dark hover:bg-cyan-950/80 text-cyan-300 hover:text-white border border-slate-700/80 hover:border-cyan-500/40 font-mono font-medium transition-all shadow-sm cursor-pointer active:scale-95">FOOD</button><button class="px-2.5 py-1 rounded-lg bg-surface-dark hover:bg-cyan-950/80 text-cyan-300 hover:text-white border border-slate-700/80 hover:border-cyan-500/40 font-mono font-medium transition-all shadow-sm cursor-pointer active:scale-95">HOSPITAL</button><button class="flex items-center gap-1 px-3 py-1 rounded-lg bg-gradient-to-r from-cyan-500/20 to-emerald-500/20 text-cyan-200 hover:text-white border border-cyan-500/40 font-semibold transition-all ml-1 cursor-pointer"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-book-open w-3.5 h-3.5" aria-hidden="true"><path d="M12 5v16"></path><path d="M20.001 19A2 2 0 0022 17V5a2 2 0 00-1.999-2L16 3.002A5 5 0 0012 5a5 5 0 00-4-2H4a2 2 0 00-2 2v12a2 2 0 001.999 2H8a5 5 0 014 2 5 5 0 014-2z"></path></svg><span>ISL Dictionary</span></button></div></div><div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start"><div class="lg:col-span-7 space-y-3.5"><div class="relative w-full aspect-video bg-surface-darker rounded-2xl overflow-hidden border border-cyan-500/20 shadow-2xl group"><video autoPlay="" playsInline="" muted="" class="w-full h-full object-cover transition-transform duration-300 scale-x-100"></video><div class="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none z-20"><div class="flex items-center gap-2"><div class="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium glass-panel border border-cyan-500/30 text-cyan-300"><span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span><span>CONNECTING...</span></div></div><div class="flex items-center gap-2"><div class="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs glass-panel border border-slate-700/60"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-layers lucide-layers-3 w-3.5 h-3.5 text-cyan-400" aria-hidden="true"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"></path><path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"></path><path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"></path></svg><span class="text-slate-300">Hands:<!-- --> <strong class="text-amber-400">0</strong></span></div><div class="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs glass-panel border border-slate-700/60 text-slate-400"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield w-3 h-3 text-emerald-400" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"></path></svg><span class="hidden sm:inline">100% On-Device</span></div></div></div><div class="absolute inset-0 bg-gradient-to-br from-surface-dark via-surface-darker to-[#090d16] flex flex-col items-center justify-center p-6 text-center z-30"><div class="w-16 h-16 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center mb-4 text-cyan-400 shadow-inner"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-camera w-8 h-8" aria-hidden="true"><path d="M13.997 4a2 2 0 0 1 1.76 1.05l.486.9A2 2 0 0 0 18.003 7H20a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1.997a2 2 0 0 0 1.759-1.048l.489-.904A2 2 0 0 1 10.004 4z"></path><circle cx="12" cy="13" r="3"></circle></svg></div><h3 class="text-xl font-bold text-white mb-1">Camera Initializing</h3><p class="text-slate-400 text-sm max-w-sm mb-6">SignBridge AI requires camera input to interpret sign language.</p><button class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 hover:from-cyan-400 hover:to-emerald-400 text-white font-semibold text-sm transition-all shadow-lg cursor-pointer">Start Camera Feed</button></div></div><div class="flex flex-wrap items-center justify-between gap-3 p-3.5 rounded-2xl glass-panel border border-cyan-500/20 text-sm"><div class="flex flex-wrap items-center gap-2"><button class="flex items-center gap-2 px-4 py-2 rounded-xl font-medium transition-all cursor-pointer bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 hover:bg-emerald-500/30" title="Start camera stream"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-video w-4 h-4 text-emerald-400" aria-hidden="true"><path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"></path><rect x="2" y="6" width="14" height="12" rx="2"></rect></svg><span>Resume Camera</span></button><button disabled="" class="flex items-center gap-2 px-3.5 py-2 rounded-xl glass-panel border border-cyan-500/30 text-cyan-200 hover:text-white hover:border-cyan-400 transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer" title="Switch between Rear and Front camera"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-switch-camera w-4 h-4 text-cyan-400" aria-hidden="true"><path d="M11 19H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"></path><path d="M13 5h7a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-5"></path><circle cx="12" cy="12" r="3"></circle><path d="m18 22-3-3 3-3"></path><path d="m6 2 3 3-3 3"></path></svg><span>Rear (ISL View)</span></button></div><div class="flex items-center gap-2 ml-auto"><div class="flex items-center gap-1.5 p-1 rounded-xl bg-surface-dark border border-slate-700/80"><button class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer bg-cyan-500 text-surface-darker font-bold shadow-md shadow-cyan-500/20"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-cpu w-3.5 h-3.5" aria-hidden="true"><path d="M12 20v2"></path><path d="M12 2v2"></path><path d="M17 20v2"></path><path d="M17 2v2"></path><path d="M2 12h2"></path><path d="M2 17h2"></path><path d="M2 7h2"></path><path d="M20 12h2"></path><path d="M20 17h2"></path><path d="M20 7h2"></path><path d="M7 20v2"></path><path d="M7 2v2"></path><rect x="4" y="4" width="16" height="16" rx="2"></rect><rect x="8" y="8" width="8" height="8" rx="1"></rect></svg><span>ONNX Temporal</span></button><button class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer text-slate-400 hover:text-slate-200"><span>Geometric Heuristic</span></button></div></div></div><div class="rounded-2xl glass-panel border border-cyan-500/20 text-xs overflow-hidden transition-all shadow-md"><button class="w-full flex items-center justify-between px-4 py-2.5 bg-surface-darker/60 hover:bg-surface-dark/80 transition-colors text-left cursor-pointer"><div class="flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-activity w-3.5 h-3.5 text-cyan-400" aria-hidden="true"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"></path></svg><span class="font-semibold text-slate-300 uppercase tracking-wider text-[11px]">Technical AI Metrics</span><span class="hidden sm:inline-block w-1.5 h-1.5 rounded-full bg-emerald-400"></span><span class="hidden sm:inline-block text-slate-400 font-mono">0<!-- --> FPS · <!-- -->0<!-- -->ms Inference</span></div><div class="flex items-center gap-2"><span class="text-[11px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/30">Local WASM</span><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down w-3.5 h-3.5 text-slate-400" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></div></button></div></div><div class="lg:col-span-5 space-y-4 flex flex-col"><div class="rounded-3xl glass-panel-elevated text-slate-100 shadow-xl transition-all duration-300 glass-panel-elevated border border-cyan-500/30"><div class="flex flex-col space-y-1.5 p-6 pb-2"><div class="flex items-center justify-between"><div class="flex items-center gap-2"><div class="w-2.5 h-2.5 rounded-full bg-cyan-500/40"></div><span class="text-xs uppercase tracking-wider font-semibold text-slate-400">Current Detected Sign</span></div></div></div><div class="p-6 pt-0"><div class="my-2 text-center sm:text-left"><div class="flex flex-col sm:flex-row sm:items-baseline gap-2"><h2 class="text-3xl sm:text-4xl font-black tracking-tight text-slate-500 font-mono text-xl sm:text-2xl">WAITING FOR GESTURE</h2></div></div><div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4 pt-3 border-t border-slate-700/40"><div class="w-full space-y-1.5"><div class="flex justify-between items-center text-xs"><span class="text-slate-400 font-medium">Confidence</span><span class="font-mono font-bold text-amber-400">0<!-- -->%</span></div><div class="relative"><div class="relative h-2 w-full overflow-hidden rounded-full bg-slate-800 border border-slate-700/60"><div class="h-full w-full flex-1 transition-all duration-300 rounded-full bg-gradient-to-r from-amber-500 to-amber-400" style="transform:translateX(-100%)"></div></div><div class="absolute top-0 bottom-0 w-0.5 bg-slate-400/60 pointer-events-none" style="left:80%" title="Acceptance threshold (80%)"></div></div></div><div class="w-full space-y-1.5"><div class="flex justify-between items-center text-xs"><span class="text-slate-400 font-medium">Temporal Lock</span><span class="font-mono text-cyan-400">0<!-- -->%</span></div><div class="relative h-2 w-full overflow-hidden rounded-full bg-slate-800 border border-slate-700/60"><div class="h-full w-full flex-1 transition-all duration-300 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.6)]" style="transform:translateX(-100%)"></div></div></div></div></div></div><div class="flex-1"><div class="flex flex-col h-full rounded-3xl glass-panel-elevated border border-cyan-500/20 p-6 shadow-xl"><div class="flex items-center justify-between pb-3 border-b border-slate-700/50"><div class="flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-message-square w-4 h-4 text-cyan-400" aria-hidden="true"><path d="M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z"></path></svg><h3 class="text-xs uppercase font-bold tracking-wider text-slate-300">Translated Message</h3></div><div class="flex items-center gap-1.5"><button class="inline-flex items-center justify-center whitespace-nowrap font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 disabled:pointer-events-none disabled:opacity-50 cursor-pointer bg-slate-800 text-slate-200 hover:bg-slate-700 border border-slate-700/60 rounded-lg px-3 text-xs h-8 gap-1.5" disabled="" title="Copy message to clipboard"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-copy w-3.5 h-3.5 text-slate-400" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg><span>Copy</span></button><button class="inline-flex items-center justify-center whitespace-nowrap font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 disabled:pointer-events-none disabled:opacity-50 cursor-pointer bg-rose-500/20 text-rose-300 border border-rose-500/40 hover:bg-rose-500/30 rounded-lg px-3 text-xs h-8 gap-1" disabled="" title="Clear all tokens"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash lucide-trash-2 w-3.5 h-3.5" aria-hidden="true"><path d="M10 11v6"></path><path d="M14 11v6"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path><path d="M3 6h18"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg><span>Clear</span></button></div></div><div class="flex-1 flex flex-col justify-center my-4 min-h-[120px] p-5 rounded-2xl bg-surface-darker/60 border border-slate-800"><div class="text-center py-6 text-slate-500"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sparkles lucide-stars w-8 h-8 mx-auto mb-2 text-slate-600 animate-pulse" aria-hidden="true"><path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"></path><path d="M20 2v4"></path><path d="M22 4h-4"></path><circle cx="4" cy="20" r="2"></circle></svg><p class="text-sm">Signs you perform will automatically assemble into a sentence here</p></div></div><div class="pt-2"><button class="inline-flex items-center justify-center whitespace-nowrap transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 disabled:pointer-events-none disabled:opacity-50 cursor-pointer bg-slate-800 text-slate-200 hover:bg-slate-700 border border-slate-700/60 h-12 rounded-2xl px-6 w-full gap-2 text-sm font-bold" disabled=""><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-volume-2 w-5 h-5" aria-hidden="true"><path d="M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z"></path><path d="M16 9a5 5 0 0 1 0 6"></path><path d="M19.364 18.364a9 9 0 0 0 0-12.728"></path></svg><span>Speak Sentence (Text-to-Speech)</span></button></div></div></div></div></div><footer class="pt-6 border-t border-slate-800/80 text-xs text-slate-400 flex flex-col sm:flex-row items-center justify-between gap-3"><div class="flex items-center gap-2 text-emerald-400/90 font-medium"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield-check w-4 h-4 shrink-0 text-emerald-400" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"></path><path d="m9 12 2 2 4-4"></path></svg><span>Privacy Guaranteed: Your camera video is processed 100% locally in your browser. Video is never uploaded or saved to any cloud server.</span></div><div class="flex items-center gap-3 text-slate-500 font-mono text-[11px]"><span>ISL-Spec v1.0</span><span>•</span><span>MediaPipe Tasks Vision</span><span>•</span><span>ONNX Runtime Web</span></div></footer></div></main><!--$--><!--/$--><script src="/_next/static/chunks/webpack-85fd1dc37fa4476d.js" id="_R_" async=""></script><script>(self.__next_f=self.__next_f||[]).push([0])</script><script>self.__next_f.push([1,"1:\"$Sreact.fragment\"\n2:I[2468,[\"177\",\"static/chunks/app/layout-814f5208eb8ae136.js\"],\"SmoothScrollProvider\"]\n3:I[3654,[],\"\"]\n4:I[4684,[],\"\"]\n5:I[2023,[],\"ClientPageRoot\"]\n6:I[2954,[\"499\",\"static/chunks/499-fc1e23df8a74dcd7.js\",\"974\",\"static/chunks/app/page-c91c54623f0e15ad.js\"],\"default\"]\n9:I[3599,[],\"OutletBoundary\"]\na:\"$Sreact.suspense\"\nc:I[3599,[],\"ViewportBoundary\"]\ne:I[3599,[],\"MetadataBoundary\"]\n10:I[6958,[],\"default\",1]\n:HL[\"/_next/static/css/9c84b60add03ceab.css\",\"style\"]\n0:{\"P\":null,\"c\":[\"\",\"\"],\"q\":\"\",\"i\":false,\"f\":[[[\"\",{\"children\":[\"__PAGE__\",{},\"$undefined\",\"$undefined\",4608]},\"$undefined\",\"$undefined\",4624],[[\"$\",\"$1\",\"c\",{\"children\":[[[\"$\",\"link\",\"0\",{\"rel\":\"stylesheet\",\"href\":\"/_next/static/css/9c84b60add03ceab.css\",\"precedence\":\"next\",\"crossOrigin\":\"$undefined\",\"nonce\":\"$undefined\"}]],[\"$\",\"html\",null,{\"lang\":\"en\",\"className\":\"dark\",\"children\":[\"$\",\"body\",null,{\"className\":\"min-h-screen bg-[#060913] text-slate-100 antialiased selection:bg-cyan-500 selection:text-surface-darker\",\"children\":[\"$\",\"$L2\",null,{\"children\":[\"$\",\"$L3\",null,{\"parallelRouterKey\":\"children\",\"error\":\"$undefined\",\"errorStyles\":\"$undefined\",\"errorScripts\":\"$undefined\",\"template\":[\"$\",\"$L4\",null,{}],\"templateStyles\":\"$undefined\",\"templateScripts\":\"$undefined\",\"notFound\":[[[\"$\",\"title\",null,{\"children\":\"404: This page could not be found.\"}],[\"$\",\"div\",null,{\"style\":{\"fontFamily\":\"system-ui,\\\"Segoe UI\\\",Roboto,Helvetica,Arial,sans-serif,\\\"Apple Color Emoji\\\",\\\"Segoe UI Emoji\\\"\",\"height\":\"100vh\",\"textAlign\":\"center\",\"display\":\"flex\",\"flexDirection\":\"column\",\"alignItems\":\"center\",\"justifyContent\":\"center\"},\"children\":[\"$\",\"div\",null,{\"children\":[[\"$\",\"style\",null,{\"dangerouslySetInnerHTML\":{\"__html\":\"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}\"}}],[\"$\",\"h1\",null,{\"className\":\"next-error-h1\",\"style\":{\"display\":\"inline-block\",\"margin\":\"0 20px 0 0\",\"padding\":\"0 23px 0 0\",\"fontSize\":24,\"fontWeight\":500,\"verticalAlign\":\"top\",\"lineHeight\":\"49px\"},\"children\":404}],[\"$\",\"div\",null,{\"style\":{\"display\":\"inline-block\"},\"children\":[\"$\",\"h2\",null,{\"style\":{\"fontSize\":14,\"fontWeight\":400,\"lineHeight\":\"49px\",\"margin\":0},\"children\":\"This page could not be found.\"}]}]]}]}]],[]],\"forbidden\":\"$undefined\",\"unauthorized\":\"$undefined\"}]}]}]}]]}],{\"children\":[[\"$\",\"$1\",\"c\",{\"children\":[[\"$\",\"$L5\",null,{\"Component\":\"$6\",\"serverProvidedParams\":{\"searchParams\":{},\"params\":{},\"promises\":[\"$@7\",\"$@8\"]}}],null,[\"$\",\"$L9\",null,{\"children\":[\"$\",\"$a\",null,{\"name\":\"Next.MetadataOutlet\",\"children\":\"$@b\"}]}]]}],{},null,false,null]},null,false,null],[\"$\",\"$1\",\"h\",{\"children\":[null,[\"$\",\"$Lc\",null,{\"children\":\"$Ld\"}],[\"$\",\"div\",null,{\"hidden\":true,\"children\":[\"$\",\"$Le\",null,{\"children\":[\"$\",\"$a\",null,{\"name\":\"Next.Metadata\",\"children\":\"$Lf\"}]}]}],null]}],false]],\"m\":\"$undefined\",\"G\":[\"$10\",[]],\"S\":true,\"h\":null,\"r\":\"$undefined\",\"s\":\"$undefined\",\"a\":\"$undefined\",\"l\":\"$undefined\",\"p\":\"$undefined\",\"d\":\"$undefined\",\"b\":\"YHkVndWJXxUmTLO7g7aaz\"}\n7:{}\n8:\"$0:f:0:1:1:children:0:props:children:0:props:serverProvidedParams:params\"\nd:[[\"$\",\"meta\",\"0\",{\"charSet\":\"utf-8\"}],[\"$\",\"meta\",\"1\",{\"name\":\"viewport\",\"content\":\"width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no\"}],[\"$\",\"meta\",\"2\",{\"name\":\"theme-color\",\"content\":\"#060913\"}]]\nb:null\nf:[[\"$\",\"title\",\"0\",{\"children\":\"SignBridge AI - Real-Time Indian Sign Language (ISL) Interpreter\"}],[\"$\",\"meta\",\"1\",{\"name\":\"description\",\"content\":\"Web-based real-time Indian Sign Language (ISL) interpreter converting rear-camera hand and body gestures into text and spoken voice with 100% on-device privacy.\"}],[\"$\",\"meta\",\"2\",{\"name\":\"author\",\"content\":\"SignBridge AI Team\"}],[\"$\",\"meta\",\"3\",{\"name\":\"keywords\",\"content\":\"Indian Sign Language,ISL,Sign Language Interpreter,MediaPipe,Real-Time,Accessibility,Assistive Technology\"}]]\n"])</script></body></html>
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+    />
+    <link
+      rel="stylesheet"
+      href="/_next/static/css/9c84b60add03ceab.css"
+      data-precedence="next"
+    />
+    <link
+      rel="preload"
+      as="script"
+      fetchpriority="low"
+      href="/_next/static/chunks/webpack-85fd1dc37fa4476d.js"
+    />
+    <script
+      src="/_next/static/chunks/d2a7acc3-52bafb6dc0d2c039.js"
+      async=""
+    ></script>
+    <script
+      src="/_next/static/chunks/288-42e5df8d65f384bd.js"
+      async=""
+    ></script>
+    <script
+      src="/_next/static/chunks/main-app-e2d4911b886d6434.js"
+      async=""
+    ></script>
+    <script
+      src="/_next/static/chunks/app/layout-814f5208eb8ae136.js"
+      async=""
+    ></script>
+    <script
+      src="/_next/static/chunks/499-fc1e23df8a74dcd7.js"
+      async=""
+    ></script>
+    <script
+      src="/_next/static/chunks/app/page-c91c54623f0e15ad.js"
+      async=""
+    ></script>
+    <meta name="theme-color" content="#060913" />
+    <title>
+      Gesturify AI - Real-Time Indian Sign Language (ISL) Interpreter
+    </title>
+    <meta
+      name="description"
+      content="Web-based real-time Indian Sign Language (ISL) interpreter converting rear-camera hand and body gestures into text and spoken voice with 100% on-device privacy."
+    />
+    <meta name="author" content="Gesturify AI Team" />
+    <meta
+      name="keywords"
+      content="Indian Sign Language,ISL,Sign Language Interpreter,MediaPipe,Real-Time,Accessibility,Assistive Technology"
+    />
+    <script
+      src="/_next/static/chunks/polyfills-42372ed130431b0a.js"
+      nomodule=""
+    ></script>
+  </head>
+  <body
+    class="min-h-screen bg-[#060913] text-slate-100 antialiased selection:bg-cyan-500 selection:text-surface-darker"
+  >
+    <div hidden=""><!--$--><!--/$--></div>
+    <main class="min-h-screen bg-[#060913] text-slate-100 flex flex-col pb-8">
+      <header
+        class="sticky top-0 z-40 bg-[#060913]/90 backdrop-blur-xl border-b border-cyan-500/20 px-4 sm:px-6 py-3"
+      >
+        <div
+          class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3"
+        >
+          <div class="flex items-center gap-3">
+            <div
+              class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 via-teal-400 to-emerald-400 p-0.5 shadow-lg shadow-cyan-500/20"
+            >
+              <div
+                class="w-full h-full bg-[#090d16] rounded-[10px] flex items-center justify-center"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="lucide lucide-hand w-5 h-5 text-cyan-400"
+                  aria-hidden="true"
+                >
+                  <path d="M18 11V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2"></path>
+                  <path d="M14 10V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v2"></path>
+                  <path d="M10 10.5V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2v8"></path>
+                  <path
+                    d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"
+                  ></path>
+                </svg>
+              </div>
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <h1 class="text-lg font-black tracking-tight text-white">
+                  Gesturify <span class="text-cyan-400">AI</span>
+                </h1>
+                <span
+                  class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-cyan-500/10 text-cyan-300 border border-cyan-500/30"
+                  >ISL EDITION</span
+                >
+              </div>
+              <p class="text-[11px] text-slate-400">
+                Real-Time Indian Sign Language Interpreter
+              </p>
+            </div>
+          </div>
+          <div
+            class="flex items-center gap-1.5 p-1 rounded-2xl bg-surface-dark border border-slate-700/80"
+          >
+            <button
+              class="flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer bg-gradient-to-r from-cyan-500 to-emerald-500 text-surface-darker font-bold shadow-md shadow-cyan-500/25"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="lucide lucide-hand w-3.5 h-3.5"
+                aria-hidden="true"
+              >
+                <path d="M18 11V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2"></path>
+                <path d="M14 10V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v2"></path>
+                <path d="M10 10.5V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2v8"></path>
+                <path
+                  d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"
+                ></path></svg
+              ><span>Sign → Speech</span></button
+            ><button
+              class="flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer text-slate-400 hover:text-slate-200"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="lucide lucide-mic w-3.5 h-3.5"
+                aria-hidden="true"
+              >
+                <path d="M12 19v3"></path>
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                <rect x="9" y="2" width="6" height="13" rx="3"></rect></svg
+              ><span>Speech → Sign Avatar</span>
+            </button>
+          </div>
+          <div class="flex items-center gap-2">
+            <button
+              class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium glass-panel border border-cyan-500/30 text-cyan-300 hover:text-white hover:border-cyan-400 transition-all cursor-pointer"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="lucide lucide-book-open w-3.5 h-3.5"
+                aria-hidden="true"
+              >
+                <path d="M12 5v16"></path>
+                <path
+                  d="M20.001 19A2 2 0 0022 17V5a2 2 0 00-1.999-2L16 3.002A5 5 0 0012 5a5 5 0 00-4-2H4a2 2 0 00-2 2v12a2 2 0 001.999 2H8a5 5 0 014 2 5 5 0 014-2z"
+                ></path></svg
+              ><span class="hidden sm:inline">Supported Signs</span>
+            </button>
+          </div>
+        </div>
+      </header>
+      <div class="max-w-7xl mx-auto w-full px-4 sm:px-6 pt-4 flex-1 space-y-4">
+        <div
+          class="flex flex-wrap items-center gap-4 py-2 px-4 rounded-xl glass-panel border border-cyan-500/20 text-xs"
+        >
+          <div class="flex items-center gap-2">
+            <span class="font-semibold text-slate-300">Pipeline:</span
+            ><span
+              class="px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 font-semibold flex items-center gap-1 animate-pulse"
+              ><svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="lucide lucide-loader-circle lucide-loader-2 w-3 h-3 animate-spin"
+                aria-hidden="true"
+              >
+                <path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg
+              >Initializing vision runtime...</span
+            >
+          </div>
+          <div
+            class="hidden md:flex items-center gap-3 border-l border-slate-700/60 pl-4"
+          >
+            <div class="flex items-center gap-1.5 text-slate-400">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="lucide lucide-circle w-3.5 h-3.5 text-slate-600"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="12" r="10"></circle></svg
+              ><span class="text-slate-500">Initializing camera</span>
+            </div>
+            <div class="flex items-center gap-1.5 text-slate-400">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="lucide lucide-circle w-3.5 h-3.5 text-slate-600"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="12" r="10"></circle></svg
+              ><span class="text-slate-500"
+                >Loading hand &amp; pose detector</span
+              >
+            </div>
+            <div class="flex items-center gap-1.5 text-slate-400">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="lucide lucide-circle-check lucide-check-circle-2 w-3.5 h-3.5 text-emerald-400"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="m16 9-5.5 5.5L8 12"></path></svg
+              ><span class="text-slate-200"
+                >Loading sign recognition model</span
+              >
+            </div>
+          </div>
+        </div>
+        <div
+          class="flex flex-wrap items-center justify-between gap-3 p-3.5 rounded-2xl glass-panel border border-cyan-500/20 bg-surface-darker/60 text-xs"
+        >
+          <div class="flex items-center gap-2">
+            <div
+              class="p-1.5 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/30"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="lucide lucide-sparkles lucide-stars w-4 h-4"
+                aria-hidden="true"
+              >
+                <path
+                  d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"
+                ></path>
+                <path d="M20 2v4"></path>
+                <path d="M22 4h-4"></path>
+                <circle cx="4" cy="20" r="2"></circle>
+              </svg>
+            </div>
+            <div>
+              <span class="font-bold text-slate-200">Hackathon Demo Mode:</span
+              ><span class="text-slate-400 ml-1.5 hidden sm:inline"
+                >Quickly simulate signs or test camera recognition</span
+              >
+            </div>
+          </div>
+          <div class="flex flex-wrap items-center gap-1.5">
+            <button
+              class="px-2.5 py-1 rounded-lg bg-surface-dark hover:bg-cyan-950/80 text-cyan-300 hover:text-white border border-slate-700/80 hover:border-cyan-500/40 font-mono font-medium transition-all shadow-sm cursor-pointer active:scale-95"
+            >
+              HELLO</button
+            ><button
+              class="px-2.5 py-1 rounded-lg bg-surface-dark hover:bg-cyan-950/80 text-cyan-300 hover:text-white border border-slate-700/80 hover:border-cyan-500/40 font-mono font-medium transition-all shadow-sm cursor-pointer active:scale-95"
+            >
+              WATER</button
+            ><button
+              class="px-2.5 py-1 rounded-lg bg-surface-dark hover:bg-cyan-950/80 text-cyan-300 hover:text-white border border-slate-700/80 hover:border-cyan-500/40 font-mono font-medium transition-all shadow-sm cursor-pointer active:scale-95"
+            >
+              HELP</button
+            ><button
+              class="px-2.5 py-1 rounded-lg bg-surface-dark hover:bg-cyan-950/80 text-cyan-300 hover:text-white border border-slate-700/80 hover:border-cyan-500/40 font-mono font-medium transition-all shadow-sm cursor-pointer active:scale-95"
+            >
+              THANK YOU</button
+            ><button
+              class="px-2.5 py-1 rounded-lg bg-surface-dark hover:bg-cyan-950/80 text-cyan-300 hover:text-white border border-slate-700/80 hover:border-cyan-500/40 font-mono font-medium transition-all shadow-sm cursor-pointer active:scale-95"
+            >
+              YES</button
+            ><button
+              class="px-2.5 py-1 rounded-lg bg-surface-dark hover:bg-cyan-950/80 text-cyan-300 hover:text-white border border-slate-700/80 hover:border-cyan-500/40 font-mono font-medium transition-all shadow-sm cursor-pointer active:scale-95"
+            >
+              NO</button
+            ><button
+              class="px-2.5 py-1 rounded-lg bg-surface-dark hover:bg-cyan-950/80 text-cyan-300 hover:text-white border border-slate-700/80 hover:border-cyan-500/40 font-mono font-medium transition-all shadow-sm cursor-pointer active:scale-95"
+            >
+              FOOD</button
+            ><button
+              class="px-2.5 py-1 rounded-lg bg-surface-dark hover:bg-cyan-950/80 text-cyan-300 hover:text-white border border-slate-700/80 hover:border-cyan-500/40 font-mono font-medium transition-all shadow-sm cursor-pointer active:scale-95"
+            >
+              HOSPITAL</button
+            ><button
+              class="flex items-center gap-1 px-3 py-1 rounded-lg bg-gradient-to-r from-cyan-500/20 to-emerald-500/20 text-cyan-200 hover:text-white border border-cyan-500/40 font-semibold transition-all ml-1 cursor-pointer"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="lucide lucide-book-open w-3.5 h-3.5"
+                aria-hidden="true"
+              >
+                <path d="M12 5v16"></path>
+                <path
+                  d="M20.001 19A2 2 0 0022 17V5a2 2 0 00-1.999-2L16 3.002A5 5 0 0012 5a5 5 0 00-4-2H4a2 2 0 00-2 2v12a2 2 0 001.999 2H8a5 5 0 014 2 5 5 0 014-2z"
+                ></path></svg
+              ><span>ISL Dictionary</span>
+            </button>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+          <div class="lg:col-span-7 space-y-3.5">
+            <div
+              class="relative w-full aspect-video bg-surface-darker rounded-2xl overflow-hidden border border-cyan-500/20 shadow-2xl group"
+            >
+              <video
+                autoplay=""
+                playsinline=""
+                muted=""
+                class="w-full h-full object-cover transition-transform duration-300 scale-x-100"
+              ></video>
+              <div
+                class="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none z-20"
+              >
+                <div class="flex items-center gap-2">
+                  <div
+                    class="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium glass-panel border border-cyan-500/30 text-cyan-300"
+                  >
+                    <span
+                      class="w-2 h-2 rounded-full bg-amber-400 animate-ping"
+                    ></span
+                    ><span>CONNECTING...</span>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2">
+                  <div
+                    class="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs glass-panel border border-slate-700/60"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="lucide lucide-layers lucide-layers-3 w-3.5 h-3.5 text-cyan-400"
+                      aria-hidden="true"
+                    >
+                      <path
+                        d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"
+                      ></path>
+                      <path
+                        d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"
+                      ></path>
+                      <path
+                        d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"
+                      ></path></svg
+                    ><span class="text-slate-300"
+                      >Hands:<!-- -->
+                      <strong class="text-amber-400">0</strong></span
+                    >
+                  </div>
+                  <div
+                    class="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs glass-panel border border-slate-700/60 text-slate-400"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="lucide lucide-shield w-3 h-3 text-emerald-400"
+                      aria-hidden="true"
+                    >
+                      <path
+                        d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"
+                      ></path></svg
+                    ><span class="hidden sm:inline">100% On-Device</span>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="absolute inset-0 bg-gradient-to-br from-surface-dark via-surface-darker to-[#090d16] flex flex-col items-center justify-center p-6 text-center z-30"
+              >
+                <div
+                  class="w-16 h-16 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center mb-4 text-cyan-400 shadow-inner"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="lucide lucide-camera w-8 h-8"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M13.997 4a2 2 0 0 1 1.76 1.05l.486.9A2 2 0 0 0 18.003 7H20a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1.997a2 2 0 0 0 1.759-1.048l.489-.904A2 2 0 0 1 10.004 4z"
+                    ></path>
+                    <circle cx="12" cy="13" r="3"></circle>
+                  </svg>
+                </div>
+                <h3 class="text-xl font-bold text-white mb-1">
+                  Camera Initializing
+                </h3>
+                <p class="text-slate-400 text-sm max-w-sm mb-6">
+                  Gesturify AI requires camera input to interpret sign language.
+                </p>
+                <button
+                  class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 hover:from-cyan-400 hover:to-emerald-400 text-white font-semibold text-sm transition-all shadow-lg cursor-pointer"
+                >
+                  Start Camera Feed
+                </button>
+              </div>
+            </div>
+            <div
+              class="flex flex-wrap items-center justify-between gap-3 p-3.5 rounded-2xl glass-panel border border-cyan-500/20 text-sm"
+            >
+              <div class="flex flex-wrap items-center gap-2">
+                <button
+                  class="flex items-center gap-2 px-4 py-2 rounded-xl font-medium transition-all cursor-pointer bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 hover:bg-emerald-500/30"
+                  title="Start camera stream"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="lucide lucide-video w-4 h-4 text-emerald-400"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"
+                    ></path>
+                    <rect x="2" y="6" width="14" height="12" rx="2"></rect></svg
+                  ><span>Resume Camera</span></button
+                ><button
+                  disabled=""
+                  class="flex items-center gap-2 px-3.5 py-2 rounded-xl glass-panel border border-cyan-500/30 text-cyan-200 hover:text-white hover:border-cyan-400 transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+                  title="Switch between Rear and Front camera"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="lucide lucide-switch-camera w-4 h-4 text-cyan-400"
+                    aria-hidden="true"
+                  >
+                    <path d="M11 19H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"></path>
+                    <path d="M13 5h7a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-5"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="m18 22-3-3 3-3"></path>
+                    <path d="m6 2 3 3-3 3"></path></svg
+                  ><span>Rear (ISL View)</span>
+                </button>
+              </div>
+              <div class="flex items-center gap-2 ml-auto">
+                <div
+                  class="flex items-center gap-1.5 p-1 rounded-xl bg-surface-dark border border-slate-700/80"
+                >
+                  <button
+                    class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer bg-cyan-500 text-surface-darker font-bold shadow-md shadow-cyan-500/20"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="lucide lucide-cpu w-3.5 h-3.5"
+                      aria-hidden="true"
+                    >
+                      <path d="M12 20v2"></path>
+                      <path d="M12 2v2"></path>
+                      <path d="M17 20v2"></path>
+                      <path d="M17 2v2"></path>
+                      <path d="M2 12h2"></path>
+                      <path d="M2 17h2"></path>
+                      <path d="M2 7h2"></path>
+                      <path d="M20 12h2"></path>
+                      <path d="M20 17h2"></path>
+                      <path d="M20 7h2"></path>
+                      <path d="M7 20v2"></path>
+                      <path d="M7 2v2"></path>
+                      <rect x="4" y="4" width="16" height="16" rx="2"></rect>
+                      <rect x="8" y="8" width="8" height="8" rx="1"></rect></svg
+                    ><span>ONNX Temporal</span></button
+                  ><button
+                    class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer text-slate-400 hover:text-slate-200"
+                  >
+                    <span>Geometric Heuristic</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div
+              class="rounded-2xl glass-panel border border-cyan-500/20 text-xs overflow-hidden transition-all shadow-md"
+            >
+              <button
+                class="w-full flex items-center justify-between px-4 py-2.5 bg-surface-darker/60 hover:bg-surface-dark/80 transition-colors text-left cursor-pointer"
+              >
+                <div class="flex items-center gap-2">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="lucide lucide-activity w-3.5 h-3.5 text-cyan-400"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"
+                    ></path></svg
+                  ><span
+                    class="font-semibold text-slate-300 uppercase tracking-wider text-[11px]"
+                    >Technical AI Metrics</span
+                  ><span
+                    class="hidden sm:inline-block w-1.5 h-1.5 rounded-full bg-emerald-400"
+                  ></span
+                  ><span class="hidden sm:inline-block text-slate-400 font-mono"
+                    >0<!-- -->
+                    FPS ·
+                    <!-- -->0<!-- -->ms Inference</span
+                  >
+                </div>
+                <div class="flex items-center gap-2">
+                  <span
+                    class="text-[11px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/30"
+                    >Local WASM</span
+                  ><svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="lucide lucide-chevron-down w-3.5 h-3.5 text-slate-400"
+                    aria-hidden="true"
+                  >
+                    <path d="m6 9 6 6 6-6"></path>
+                  </svg>
+                </div>
+              </button>
+            </div>
+          </div>
+          <div class="lg:col-span-5 space-y-4 flex flex-col">
+            <div
+              class="rounded-3xl glass-panel-elevated text-slate-100 shadow-xl transition-all duration-300 glass-panel-elevated border border-cyan-500/30"
+            >
+              <div class="flex flex-col space-y-1.5 p-6 pb-2">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <div class="w-2.5 h-2.5 rounded-full bg-cyan-500/40"></div>
+                    <span
+                      class="text-xs uppercase tracking-wider font-semibold text-slate-400"
+                      >Current Detected Sign</span
+                    >
+                  </div>
+                </div>
+              </div>
+              <div class="p-6 pt-0">
+                <div class="my-2 text-center sm:text-left">
+                  <div
+                    class="flex flex-col sm:flex-row sm:items-baseline gap-2"
+                  >
+                    <h2
+                      class="text-3xl sm:text-4xl font-black tracking-tight text-slate-500 font-mono text-xl sm:text-2xl"
+                    >
+                      WAITING FOR GESTURE
+                    </h2>
+                  </div>
+                </div>
+                <div
+                  class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4 pt-3 border-t border-slate-700/40"
+                >
+                  <div class="w-full space-y-1.5">
+                    <div class="flex justify-between items-center text-xs">
+                      <span class="text-slate-400 font-medium">Confidence</span
+                      ><span class="font-mono font-bold text-amber-400"
+                        >0<!-- -->%</span
+                      >
+                    </div>
+                    <div class="relative">
+                      <div
+                        class="relative h-2 w-full overflow-hidden rounded-full bg-slate-800 border border-slate-700/60"
+                      >
+                        <div
+                          class="h-full w-full flex-1 transition-all duration-300 rounded-full bg-gradient-to-r from-amber-500 to-amber-400"
+                          style="transform: translateX(-100%)"
+                        ></div>
+                      </div>
+                      <div
+                        class="absolute top-0 bottom-0 w-0.5 bg-slate-400/60 pointer-events-none"
+                        style="left: 80%"
+                        title="Acceptance threshold (80%)"
+                      ></div>
+                    </div>
+                  </div>
+                  <div class="w-full space-y-1.5">
+                    <div class="flex justify-between items-center text-xs">
+                      <span class="text-slate-400 font-medium"
+                        >Temporal Lock</span
+                      ><span class="font-mono text-cyan-400">0<!-- -->%</span>
+                    </div>
+                    <div
+                      class="relative h-2 w-full overflow-hidden rounded-full bg-slate-800 border border-slate-700/60"
+                    >
+                      <div
+                        class="h-full w-full flex-1 transition-all duration-300 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.6)]"
+                        style="transform: translateX(-100%)"
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="flex-1">
+              <div
+                class="flex flex-col h-full rounded-3xl glass-panel-elevated border border-cyan-500/20 p-6 shadow-xl"
+              >
+                <div
+                  class="flex items-center justify-between pb-3 border-b border-slate-700/50"
+                >
+                  <div class="flex items-center gap-2">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="lucide lucide-message-square w-4 h-4 text-cyan-400"
+                      aria-hidden="true"
+                    >
+                      <path
+                        d="M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z"
+                      ></path>
+                    </svg>
+                    <h3
+                      class="text-xs uppercase font-bold tracking-wider text-slate-300"
+                    >
+                      Translated Message
+                    </h3>
+                  </div>
+                  <div class="flex items-center gap-1.5">
+                    <button
+                      class="inline-flex items-center justify-center whitespace-nowrap font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 disabled:pointer-events-none disabled:opacity-50 cursor-pointer bg-slate-800 text-slate-200 hover:bg-slate-700 border border-slate-700/60 rounded-lg px-3 text-xs h-8 gap-1.5"
+                      disabled=""
+                      title="Copy message to clipboard"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        class="lucide lucide-copy w-3.5 h-3.5 text-slate-400"
+                        aria-hidden="true"
+                      >
+                        <rect
+                          width="14"
+                          height="14"
+                          x="8"
+                          y="8"
+                          rx="2"
+                          ry="2"
+                        ></rect>
+                        <path
+                          d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"
+                        ></path></svg
+                      ><span>Copy</span></button
+                    ><button
+                      class="inline-flex items-center justify-center whitespace-nowrap font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 disabled:pointer-events-none disabled:opacity-50 cursor-pointer bg-rose-500/20 text-rose-300 border border-rose-500/40 hover:bg-rose-500/30 rounded-lg px-3 text-xs h-8 gap-1"
+                      disabled=""
+                      title="Clear all tokens"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        class="lucide lucide-trash lucide-trash-2 w-3.5 h-3.5"
+                        aria-hidden="true"
+                      >
+                        <path d="M10 11v6"></path>
+                        <path d="M14 11v6"></path>
+                        <path
+                          d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"
+                        ></path>
+                        <path d="M3 6h18"></path>
+                        <path
+                          d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+                        ></path></svg
+                      ><span>Clear</span>
+                    </button>
+                  </div>
+                </div>
+                <div
+                  class="flex-1 flex flex-col justify-center my-4 min-h-[120px] p-5 rounded-2xl bg-surface-darker/60 border border-slate-800"
+                >
+                  <div class="text-center py-6 text-slate-500">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="lucide lucide-sparkles lucide-stars w-8 h-8 mx-auto mb-2 text-slate-600 animate-pulse"
+                      aria-hidden="true"
+                    >
+                      <path
+                        d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"
+                      ></path>
+                      <path d="M20 2v4"></path>
+                      <path d="M22 4h-4"></path>
+                      <circle cx="4" cy="20" r="2"></circle>
+                    </svg>
+                    <p class="text-sm">
+                      Signs you perform will automatically assemble into a
+                      sentence here
+                    </p>
+                  </div>
+                </div>
+                <div class="pt-2">
+                  <button
+                    class="inline-flex items-center justify-center whitespace-nowrap transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 disabled:pointer-events-none disabled:opacity-50 cursor-pointer bg-slate-800 text-slate-200 hover:bg-slate-700 border border-slate-700/60 h-12 rounded-2xl px-6 w-full gap-2 text-sm font-bold"
+                    disabled=""
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="lucide lucide-volume-2 w-5 h-5"
+                      aria-hidden="true"
+                    >
+                      <path
+                        d="M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z"
+                      ></path>
+                      <path d="M16 9a5 5 0 0 1 0 6"></path>
+                      <path d="M19.364 18.364a9 9 0 0 0 0-12.728"></path></svg
+                    ><span>Speak Sentence (Text-to-Speech)</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <footer
+          class="pt-6 border-t border-slate-800/80 text-xs text-slate-400 flex flex-col sm:flex-row items-center justify-between gap-3"
+        >
+          <div class="flex items-center gap-2 text-emerald-400/90 font-medium">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="lucide lucide-shield-check w-4 h-4 shrink-0 text-emerald-400"
+              aria-hidden="true"
+            >
+              <path
+                d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"
+              ></path>
+              <path d="m9 12 2 2 4-4"></path></svg
+            ><span
+              >Privacy Guaranteed: Your camera video is processed 100% locally
+              in your browser. Video is never uploaded or saved to any cloud
+              server.</span
+            >
+          </div>
+          <div
+            class="flex items-center gap-3 text-slate-500 font-mono text-[11px]"
+          >
+            <span>ISL-Spec v1.0</span><span>•</span
+            ><span>MediaPipe Tasks Vision</span><span>•</span
+            ><span>ONNX Runtime Web</span>
+          </div>
+        </footer>
+      </div>
+    </main>
+    <!--$--><!--/$-->
+    <script
+      src="/_next/static/chunks/webpack-85fd1dc37fa4476d.js"
+      id="_R_"
+      async=""
+    ></script>
+    <script>
+      (self.__next_f = self.__next_f || []).push([0]);
+    </script>
+    <script>
+      self.__next_f.push([
+        1,
+        '1:"$Sreact.fragment"\n2:I[2468,["177","static/chunks/app/layout-814f5208eb8ae136.js"],"SmoothScrollProvider"]\n3:I[3654,[],""]\n4:I[4684,[],""]\n5:I[2023,[],"ClientPageRoot"]\n6:I[2954,["499","static/chunks/499-fc1e23df8a74dcd7.js","974","static/chunks/app/page-c91c54623f0e15ad.js"],"default"]\n9:I[3599,[],"OutletBoundary"]\na:"$Sreact.suspense"\nc:I[3599,[],"ViewportBoundary"]\ne:I[3599,[],"MetadataBoundary"]\n10:I[6958,[],"default",1]\n:HL["/_next/static/css/9c84b60add03ceab.css","style"]\n0:{"P":null,"c":["",""],"q":"","i":false,"f":[[["",{"children":["__PAGE__",{},"$undefined","$undefined",4608]},"$undefined","$undefined",4624],[["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/css/9c84b60add03ceab.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]],["$","html",null,{"lang":"en","className":"dark","children":["$","body",null,{"className":"min-h-screen bg-[#060913] text-slate-100 antialiased selection:bg-cyan-500 selection:text-surface-darker","children":["$","$L2",null,{"children":["$","$L3",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L4",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[[["$","title",null,{"children":"404: This page could not be found."}],["$","div",null,{"style":{"fontFamily":"system-ui,\\"Segoe UI\\",Roboto,Helvetica,Arial,sans-serif,\\"Apple Color Emoji\\",\\"Segoe UI Emoji\\"","height":"100vh","textAlign":"center","display":"flex","flexDirection":"column","alignItems":"center","justifyContent":"center"},"children":["$","div",null,{"children":[["$","style",null,{"dangerouslySetInnerHTML":{"__html":"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}"}}],["$","h1",null,{"className":"next-error-h1","style":{"display":"inline-block","margin":"0 20px 0 0","padding":"0 23px 0 0","fontSize":24,"fontWeight":500,"verticalAlign":"top","lineHeight":"49px"},"children":404}],["$","div",null,{"style":{"display":"inline-block"},"children":["$","h2",null,{"style":{"fontSize":14,"fontWeight":400,"lineHeight":"49px","margin":0},"children":"This page could not be found."}]}]]}]}]],[]],"forbidden":"$undefined","unauthorized":"$undefined"}]}]}]}]]}],{"children":[["$","$1","c",{"children":[["$","$L5",null,{"Component":"$6","serverProvidedParams":{"searchParams":{},"params":{},"promises":["$@7","$@8"]}}],null,["$","$L9",null,{"children":["$","$a",null,{"name":"Next.MetadataOutlet","children":"$@b"}]}]]}],{},null,false,null]},null,false,null],["$","$1","h",{"children":[null,["$","$Lc",null,{"children":"$Ld"}],["$","div",null,{"hidden":true,"children":["$","$Le",null,{"children":["$","$a",null,{"name":"Next.Metadata","children":"$Lf"}]}]}],null]}],false]],"m":"$undefined","G":["$10",[]],"S":true,"h":null,"r":"$undefined","s":"$undefined","a":"$undefined","l":"$undefined","p":"$undefined","d":"$undefined","b":"YHkVndWJXxUmTLO7g7aaz"}\n7:{}\n8:"$0:f:0:1:1:children:0:props:children:0:props:serverProvidedParams:params"\nd:[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"}],["$","meta","2",{"name":"theme-color","content":"#060913"}]]\nb:null\nf:[["$","title","0",{"children":"Gesturify AI - Real-Time Indian Sign Language (ISL) Interpreter"}],["$","meta","1",{"name":"description","content":"Web-based real-time Indian Sign Language (ISL) interpreter converting rear-camera hand and body gestures into text and spoken voice with 100% on-device privacy."}],["$","meta","2",{"name":"author","content":"Gesturify AI Team"}],["$","meta","3",{"name":"keywords","content":"Indian Sign Language,ISL,Sign Language Interpreter,MediaPipe,Real-Time,Accessibility,Assistive Technology"}]]\n',
+      ]);
+    </script>
+  </body>
+</html>

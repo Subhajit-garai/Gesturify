@@ -1,26 +1,30 @@
-# Contributing to SignBridge AI
+# Contributing to Gesturify AI
 
-Thank you for your interest in contributing to **SignBridge AI**! We welcome contributions to make sign language interpretation more accessible, accurate, and widespread.
+Thank you for your interest in contributing to **Gesturify AI**! We welcome contributions to make sign language interpretation more accessible, accurate, and widespread.
 
 ---
 
 ## 🛠️ Development Setup
 
 1. **Clone the repository:**
+
    ```bash
    git clone <repository-url>
    cd HackNext
    ```
 
 2. **Install dependencies:**
+
    ```bash
    npm install --legacy-peer-deps
    ```
 
 3. **Start the local development server:**
+
    ```bash
    npm run dev
    ```
+
    Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 4. **Verify production build before submitting:**

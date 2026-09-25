@@ -1,6 +1,6 @@
-# SignBridge AI — Admin Intelligence Dashboard (`@signbridge/admin`)
+# Gesturify AI — Admin Intelligence Dashboard (`@gesturify/admin`)
 
-This package is the telemetry, monitoring, and log intelligence dashboard for **SignBridge AI**.
+This package is the telemetry, monitoring, and log intelligence dashboard for **Gesturify AI**.
 
 ## 🚀 Running the Admin Dashboard
 
@@ -9,7 +9,7 @@ This package is the telemetry, monitoring, and log intelligence dashboard for **
 pnpm run dev:admin
 
 # Or with Turbo:
-turbo dev --filter=@signbridge/admin
+turbo dev --filter=@gesturify/admin
 ```
 
 Open [http://localhost:3002](http://localhost:3002) in your browser.

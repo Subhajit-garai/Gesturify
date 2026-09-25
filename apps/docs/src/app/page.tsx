@@ -24,19 +24,22 @@ import {
 } from "lucide-react";
 
 export default function DocsPage() {
-  const [activeTab, setActiveTab] = useState<"flow" | "files" | "models">("flow");
+  const [activeTab, setActiveTab] = useState<"flow" | "files" | "models">(
+    "flow",
+  );
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedModule, setSelectedModule] = useState<string>("ALL");
 
   const modules = ["ALL", "vision", "models", "translation", "speech"];
 
   const filteredFiles = FILES_DOCUMENTATION.filter((file) => {
-    const matchesModule = selectedModule === "ALL" || file.module === selectedModule;
+    const matchesModule =
+      selectedModule === "ALL" || file.module === selectedModule;
     const matchesSearch =
       file.path.toLowerCase().includes(searchQuery.toLowerCase()) ||
       file.purpose.toLowerCase().includes(searchQuery.toLowerCase()) ||
       file.functions.some((fn) =>
-        fn.name.toLowerCase().includes(searchQuery.toLowerCase())
+        fn.name.toLowerCase().includes(searchQuery.toLowerCase()),
       );
     return matchesModule && matchesSearch;
   });
@@ -52,13 +55,15 @@ export default function DocsPage() {
             </div>
             <div>
               <h1 className="text-lg font-bold text-white flex items-center gap-2">
-                SignBridge AI <span className="text-cyan-400">Documentation</span>
+                Gesturify AI{" "}
+                <span className="text-cyan-400">Documentation</span>
                 <span className="text-[10px] px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-300 border border-cyan-500/30">
                   MONOREPO DOCS
                 </span>
               </h1>
               <p className="text-xs text-slate-400">
-                End-to-End Execution Flow, System Architecture & Function Catalog
+                End-to-End Execution Flow, System Architecture & Function
+                Catalog
               </p>
             </div>
           </div>
@@ -131,7 +136,10 @@ export default function DocsPage() {
                 Real-Time Dataflow & Execution Lifecycle
               </h2>
               <p className="text-sm text-slate-300 max-w-3xl leading-relaxed">
-                The web interpreter operates in an autonomous real-time loop. Camera frames are processed directly by browser WebAssembly workers and passed through normalizers and sequence buffers before temporal classification and natural language synthesis.
+                The web interpreter operates in an autonomous real-time loop.
+                Camera frames are processed directly by browser WebAssembly
+                workers and passed through normalizers and sequence buffers
+                before temporal classification and natural language synthesis.
               </p>
             </div>
 
@@ -257,7 +265,9 @@ export default function DocsPage() {
                           <code className="block text-[11px] font-mono text-slate-400 bg-black/40 p-2 rounded border border-slate-800/80 overflow-x-auto">
                             {fn.signature}
                           </code>
-                          <p className="text-xs text-slate-300">{fn.description}</p>
+                          <p className="text-xs text-slate-300">
+                            {fn.description}
+                          </p>
                         </div>
                       ))}
                     </div>

@@ -185,7 +185,7 @@ export const CameraView: React.FC<CameraViewProps> = ({
           </div>
           <h3 className="text-xl font-bold text-white mb-1">Camera Initializing</h3>
           <p className="text-slate-400 text-sm max-w-sm mb-6">
-            SignBridge AI requires camera input to interpret sign language.
+            Gesturify AI requires camera input to interpret sign language.
           </p>
           <button
             onClick={onRetry}
