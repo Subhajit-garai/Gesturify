@@ -3,21 +3,24 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "turbo dev",
-    "dev:web": "turbo dev --filter=@gesturify/web",
-    "dev:docs": "turbo dev --filter=@gesturify/docs",
-    "dev:admin": "turbo dev --filter=@gesturify/admin",
-    "build": "turbo build",
-    "build:web": "turbo build --filter=@gesturify/web",
-    "build:docs": "turbo build --filter=@gesturify/docs",
-    "build:admin": "turbo build --filter=@gesturify/admin",
-    "lint": "turbo lint"
+    "dev": "npm --prefix apps/web run dev",
+    "dev:web": "npm --prefix apps/web run dev",
+    "dev:all": "turbo dev",
+    "dev:docs": "npm --prefix apps/docs run dev",
+    "dev:admin": "npm --prefix apps/admin run dev",
+    "build": "npm --prefix apps/web run build",
+    "build:web": "npm --prefix apps/web run build",
+    "build:all": "turbo build",
+    "lint": "npm --prefix apps/web run lint",
+    "users": "node scripts/count-users.mjs"
   },
   "devDependencies": {
     "turbo": "^2.11.4"
   },
   "packageManager": "pnpm@10.24.0",
   "dependencies": {
-    "pnpm": "^12.6.0"
+    "@neon/config": "^1.8.1",
+    "@neon/env": "^1.4.6",
+    "@neondatabase/serverless": "^1.1.0"
   }
 }

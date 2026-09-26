@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { Hand, Contrast, ShieldCheck, Menu, X, Video } from "lucide-react";
+import { Hand, Contrast, ShieldCheck, Menu, X, Video, LogOut, User } from "lucide-react";
+import { authClient } from "@/lib/auth/client";
 
 interface HeaderProps {
   onOpenAuth: () => void;
@@ -19,6 +20,7 @@ export default function Header({
   isDark,
 }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { data: session, isPending } = authClient.useSession();
 
   const scrollTo = (id: string) => {
     setMobileMenuOpen(false);
@@ -26,6 +28,16 @@ export default function Header({
     if (element) {
       element.scrollIntoView({ behavior: "smooth" });
     }
+  };
+
+  const handleSignOut = async () => {
+    await authClient.signOut({
+      fetchOptions: {
+        onSuccess: () => {
+          window.location.reload();
+        },
+      },
+    });
   };
 
   return (
@@ -125,15 +137,45 @@ export default function Header({
             <Contrast className="w-4 h-4" />
           </button>
 
-          {/* Auth Button */}
-          <button
-            type="button"
-            onClick={onOpenAuth}
-            className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-medium text-zinc-900 border border-zinc-300 hover:border-zinc-900 rounded-md bg-white hover:bg-zinc-50 transition-all cursor-pointer shadow-xs"
-          >
-            <ShieldCheck className="w-3.5 h-3.5 text-amethyst_smoke-400" />
-            <span>Auth Portal</span>
-          </button>
+          {/* Neon Auth Controls */}
+          <div className="hidden sm:flex items-center gap-2">
+            {!isPending && session?.user ? (
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5 px-2.5 py-1 bg-zinc-50 rounded-md border border-zinc-200">
+                  <div className="w-5 h-5 rounded-full bg-amethyst_smoke-400 text-white flex items-center justify-center text-[10px] font-bold">
+                    {session.user.name?.[0]?.toUpperCase() || session.user.email?.[0]?.toUpperCase() || "U"}
+                  </div>
+                  <span className="text-xs font-mono text-zinc-800 max-w-[120px] truncate">
+                    {session.user.name || session.user.email}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleSignOut}
+                  title="Sign Out"
+                  className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-mono text-zinc-600 hover:text-zinc-950 hover:bg-zinc-100 border border-zinc-200 rounded-md transition-colors cursor-pointer"
+                >
+                  <LogOut className="w-3 h-3" />
+                  <span>Out</span>
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <a
+                  href="/sign-in"
+                  className="inline-flex items-center px-3 py-1.5 text-xs font-mono font-medium text-zinc-700 border border-zinc-300 hover:border-zinc-900 rounded-md bg-white hover:bg-zinc-50 transition-all cursor-pointer shadow-xs"
+                >
+                  Sign In
+                </a>
+                <a
+                  href="/sign-up"
+                  className="inline-flex items-center px-3 py-1.5 text-xs font-mono font-medium text-white bg-zinc-900 hover:bg-zinc-800 rounded-md transition-all cursor-pointer shadow-xs"
+                >
+                  Sign Up
+                </a>
+              </div>
+            )}
+          </div>
 
           {/* Mobile menu trigger */}
           <button
@@ -185,18 +227,42 @@ export default function Header({
           >
             Contact
           </button>
-          <div className="pt-2 border-t border-zinc-100">
-            <button
-              type="button"
-              onClick={() => {
-                setMobileMenuOpen(false);
-                onOpenAuth();
-              }}
-              className="w-full flex items-center justify-center gap-2 py-2 text-xs font-mono font-medium text-zinc-900 border border-zinc-300 rounded-md bg-zinc-50"
-            >
-              <ShieldCheck className="w-3.5 h-3.5 text-amethyst_smoke-400" />
-              <span>Auth Portal (Manato Sign Key)</span>
-            </button>
+          <div className="pt-2 border-t border-zinc-100 space-y-2">
+            {!isPending && session?.user ? (
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 px-3 py-2 bg-zinc-50 rounded-md border border-zinc-200">
+                  <div className="w-6 h-6 rounded-full bg-amethyst_smoke-400 text-white flex items-center justify-center text-xs font-bold">
+                    {session.user.name?.[0]?.toUpperCase() || session.user.email?.[0]?.toUpperCase() || "U"}
+                  </div>
+                  <span className="text-xs font-mono text-zinc-800 truncate">
+                    {session.user.name || session.user.email}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleSignOut}
+                  className="w-full flex items-center justify-center gap-2 py-2 text-xs font-mono font-medium text-red-600 border border-red-200 rounded-md bg-white hover:bg-red-50"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  <span>Sign Out</span>
+                </button>
+              </div>
+            ) : (
+              <div className="flex gap-2">
+                <a
+                  href="/sign-in"
+                  className="flex-1 py-2 text-xs font-mono font-medium text-center text-zinc-800 border border-zinc-300 rounded-md bg-white"
+                >
+                  Sign In
+                </a>
+                <a
+                  href="/sign-up"
+                  className="flex-1 py-2 text-xs font-mono font-medium text-center text-white bg-zinc-900 rounded-md"
+                >
+                  Sign Up
+                </a>
+              </div>
+            )}
           </div>
         </div>
       )}

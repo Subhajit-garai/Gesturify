@@ -55,3 +55,4 @@ Thumbs.db
 # *.onnx
 # *.bin
 # *.tar.gz
+.clerk/
