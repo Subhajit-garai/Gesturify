@@ -29,7 +29,7 @@ yarn-error.log*
 .env
 .env*.local
 !.env.example
-.neon/
+.neon*
 
 # Vercel deployment metadata
 .vercel
@@ -56,4 +56,5 @@ Thumbs.db
 # *.onnx
 # *.bin
 # *.tar.gz
-.neon
+# Local private notes & planning logs
+signpart.md

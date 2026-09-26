@@ -1,11 +1,13 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useCamera } from "@/hooks/useCamera";
 import { useMediaPipe } from "@/hooks/useMediaPipe";
 import { useSignRecognition } from "@/hooks/useSignRecognition";
 import { LandmarkOverlay } from "@/components/LandmarkOverlay";
 import { ttsService } from "@/speech/textToSpeech";
+import TextToGesturePlayer from "./TextToGesturePlayer";
+import { getWordTrajectory } from "@/data/wordTrajectories";
 import {
   PlayCircle,
   Camera,
@@ -21,6 +23,8 @@ import {
   RotateCcw,
   Trash2,
   Delete,
+  SkipBack,
+  SkipForward,
 } from "lucide-react";
 
 interface TranslationStudioProps {
@@ -36,9 +40,12 @@ export default function TranslationStudio({
   const [textInput, setTextInput] = useState(initialText);
   const [animTokens, setAnimTokens] = useState<string[]>(["HELLO", "NICE", "MEET", "YOU"]);
   const [selectedTokenIndex, setSelectedTokenIndex] = useState(0);
-  const [isPlayingSeq, setIsPlayingSeq] = useState(false);
+  const [animSpeed, setAnimSpeed] = useState<0.75 | 1.0>(1.0);
+  const [isPlayingSeq, setIsPlayingSeq] = useState(true);
   const [isCopied, setIsCopied] = useState(false);
   const [videoDimensions, setVideoDimensions] = useState({ width: 640, height: 480 });
+  const [isAutoSpeak, setIsAutoSpeak] = useState(false);
+  const lastSpokenRef = useRef<string>("");
 
   // 1. Camera Hook
   const {
@@ -93,16 +100,8 @@ export default function TranslationStudio({
       .filter(Boolean);
     setAnimTokens(tokens.length ? tokens : ["HELLO"]);
     setSelectedTokenIndex(0);
+    setIsPlayingSeq(true);
   };
-
-  // Playback timer for sequence animation
-  useEffect(() => {
-    if (!isPlayingSeq || animTokens.length === 0) return;
-    const interval = setInterval(() => {
-      setSelectedTokenIndex((prev) => (prev + 1) % animTokens.length);
-    }, 1200);
-    return () => clearInterval(interval);
-  }, [isPlayingSeq, animTokens]);
 
   const handleLoadedMetadata = (e: React.SyntheticEvent<HTMLVideoElement>) => {
     const v = e.currentTarget;
@@ -121,10 +120,32 @@ export default function TranslationStudio({
     }
   };
 
+  // Auto-speak when a new recognized sentence or token appears
+  useEffect(() => {
+    if (!isAutoSpeak) return;
+    const textToSpeak =
+      sentence.english ||
+      (sentenceTokens.length > 0 ? sentenceTokens[sentenceTokens.length - 1].token : "");
+    if (textToSpeak && textToSpeak !== lastSpokenRef.current) {
+      lastSpokenRef.current = textToSpeak;
+      if (ttsService.isSupported()) {
+        ttsService.speak(textToSpeak, { rate: 0.95 });
+      } else if ("speechSynthesis" in window) {
+        const utterance = new SpeechSynthesisUtterance(textToSpeak);
+        utterance.rate = 0.95;
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+  }, [sentence.english, sentenceTokens, isAutoSpeak]);
+
   // Active display transcript (real assembled sentence or fallback if not started)
   const assembledSentence = sentence.english?.trim();
   const currentSignLabel =
-    currentPrediction?.label && currentPrediction.label !== "WAITING FOR GESTURE"
+    currentPrediction?.label &&
+    currentPrediction.label !== "WAITING FOR GESTURE" &&
+    currentPrediction.label !== "NO HANDS DETECTED" &&
+    currentPrediction.label !== "SEARCHING" &&
+    currentPrediction.label !== "ANALYZING..."
       ? currentPrediction.label
       : null;
 
@@ -240,11 +261,17 @@ export default function TranslationStudio({
 
                     <div className="flex items-center gap-2">
                       {currentSignLabel ? (
-                        <span className="badge-minimal">
-                          Sign: {currentSignLabel} ({confidencePercent}%)
+                        <span className="badge-minimal text-emerald-800 bg-emerald-50 border-emerald-300 font-semibold">
+                          Sign: {currentSignLabel} ({confidencePercent}%) • {Math.round(stabilityRatio * 100)}%
                         </span>
                       ) : (
-                        <span className="badge-minimal">Confidence: {confidencePercent}%</span>
+                        <span className="badge-minimal">
+                          {currentPrediction?.label === "NO HANDS DETECTED"
+                            ? "No Hands in View"
+                            : currentPrediction?.label === "ANALYZING..."
+                            ? "Analyzing Movement..."
+                            : `Confidence: ${confidencePercent}%`}
+                        </span>
                       )}
                     </div>
                   </div>
@@ -296,20 +323,52 @@ export default function TranslationStudio({
                     )}
 
                     {/* HUD Bounding Box Guides */}
-                    <div className="absolute inset-4 border border-zinc-500/20 rounded-lg pointer-events-none flex flex-col justify-between p-3 font-mono text-[10px] text-zinc-400 z-20">
-                      <div className="flex justify-between">
-                        <span className="bg-black/40 px-1.5 py-0.5 rounded">[ROI_TRACK_ACTIVE]</span>
-                        <span className="bg-black/40 px-1.5 py-0.5 rounded">
+                    <div className="absolute inset-3 border border-zinc-500/20 rounded-lg pointer-events-none flex flex-col justify-between p-3 font-mono text-[10px] text-zinc-400 z-20">
+                      <div className="flex justify-between items-start gap-2">
+                        <span className="bg-black/60 px-1.5 py-0.5 rounded border border-white/10 text-emerald-400">
+                          [ROI_TRACK_ACTIVE]
+                        </span>
+
+                        {/* Live Sign Matching Pill */}
+                        {currentSignLabel && (
+                          <div className="bg-black/85 px-2.5 py-1 rounded-md border border-emerald-500/50 text-white flex items-center gap-2 text-xs shadow-lg animate-pulse">
+                            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+                            <span className="font-bold text-emerald-300 tracking-wider">
+                              DETECTED: {currentSignLabel}
+                            </span>
+                            <span className="text-zinc-400 text-[10px]">({confidencePercent}%)</span>
+                            <span className="text-emerald-400 font-mono text-[9px] tracking-wider bg-emerald-950/60 px-1 py-0.5 rounded border border-emerald-800/60">
+                              {stabilityRatio >= 1.0
+                                ? "●●● ACCEPTED"
+                                : stabilityRatio >= 0.6
+                                ? "●●○ LOCKING"
+                                : "●○○ DETECTING"}
+                            </span>
+                          </div>
+                        )}
+
+                        <span className="bg-black/60 px-1.5 py-0.5 rounded border border-white/10 text-zinc-300">
                           {latestFrame?.hands.length
                             ? `${latestFrame.hands.length * 21}_LANDMARKS_DETECTED`
                             : "CALIBRATED_21_LANDMARKS"}
                         </span>
                       </div>
-                      <div className="flex justify-between">
-                        <span className="bg-black/40 px-1.5 py-0.5 rounded">
+
+                      <div className="flex justify-between items-end gap-2">
+                        <span className="bg-black/60 px-1.5 py-0.5 rounded border border-white/10 shrink-0">
                           FPS: {metrics.fps || 60} | LATENCY: {metrics.visionLatencyMs || visionLatency}ms
                         </span>
-                        <span className="bg-black/40 px-1.5 py-0.5 rounded">TARGET: UPPER BODY + HANDS</span>
+
+                        {/* Real-time Invariant Finger Diagnostics */}
+                        {currentPrediction?.debugInfo ? (
+                          <span className="bg-black/75 px-2 py-0.5 rounded border border-white/10 text-cyan-300 text-[10px] max-w-sm truncate">
+                            {currentPrediction.debugInfo}
+                          </span>
+                        ) : (
+                          <span className="bg-black/60 px-1.5 py-0.5 rounded border border-white/10">
+                            TARGET: UPPER BODY + HANDS
+                          </span>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -415,8 +474,8 @@ export default function TranslationStudio({
                     </p>
 
                     {/* Live Transcript Display Box */}
-                    <div className="p-4 bg-zinc-50 rounded-xl border border-zinc-200 min-h-[170px] flex flex-col justify-between mb-4">
-                      <div className="font-mono text-sm text-zinc-900 leading-relaxed break-words">
+                    <div className="p-4 bg-zinc-50 rounded-xl border border-zinc-200 min-h-42.5 flex flex-col justify-between mb-4">
+                      <div className="font-mono text-sm text-zinc-900 leading-relaxed wrap-break-word">
                         {displayTranscript}
                       </div>
 
@@ -437,14 +496,27 @@ export default function TranslationStudio({
 
                   {/* Audio Output & Copy Actions for Muted Individuals */}
                   <div className="space-y-3 pt-3 border-t border-zinc-100">
-                    <div className="flex gap-2">
+                    <div className="flex flex-wrap gap-2">
                       <button
                         type="button"
                         onClick={handleSpeak}
                         className="flex-1 btn-primary text-xs sm:text-sm cursor-pointer"
                       >
                         <Volume2 className="w-4 h-4" />
-                        <span>Speak Aloud (TTS)</span>
+                        <span>Speak Aloud</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setIsAutoSpeak((prev) => !prev)}
+                        className={`px-3 py-2 text-xs font-mono rounded-lg border transition-colors flex items-center gap-1.5 cursor-pointer ${
+                          isAutoSpeak
+                            ? "bg-emerald-50 text-emerald-800 border-emerald-300 font-semibold"
+                            : "bg-zinc-100 text-zinc-600 border-zinc-200 hover:bg-zinc-200"
+                        }`}
+                        title="Automatically speak aloud as soon as gestures are recognized"
+                      >
+                        <Volume2 className="w-3.5 h-3.5" />
+                        <span>Auto-Speak: {isAutoSpeak ? "ON" : "OFF"}</span>
                       </button>
                       <button
                         type="button"
@@ -452,7 +524,7 @@ export default function TranslationStudio({
                         className="btn-secondary text-xs sm:text-sm cursor-pointer"
                       >
                         {isCopied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                        <span>{isCopied ? "Copied!" : "Copy Text"}</span>
+                        <span>{isCopied ? "Copied!" : "Copy"}</span>
                       </button>
                     </div>
 
@@ -527,7 +599,7 @@ export default function TranslationStudio({
                         key={index}
                         type="button"
                         onClick={() => setSelectedTokenIndex(index)}
-                        className={`flex-shrink-0 px-3 py-1.5 rounded border text-xs font-mono transition-colors cursor-pointer ${
+                        className={`shrink-0 px-3 py-1.5 rounded border text-xs font-mono transition-colors cursor-pointer ${
                           selectedTokenIndex === index
                             ? "bg-zinc-900 text-white border-zinc-900 font-semibold"
                             : "bg-white text-zinc-800 border-zinc-300 hover:border-zinc-500"
@@ -543,56 +615,131 @@ export default function TranslationStudio({
               {/* Right: Animated Sign Playback Canvas (7 Cols) */}
               <div className="lg:col-span-7">
                 <div className="p-6 bg-white border border-zinc-200 rounded-2xl shadow-sm space-y-4">
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
                     <div>
-                      <h3 className="font-bold text-zinc-900 text-base">Sign Token : {currentToken}</h3>
-                      <p className="text-xs text-zinc-500">
-                        Step {selectedTokenIndex + 1} of {animTokens.length}
+                      <div className="flex items-center gap-2">
+                        <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+                        <h3 className="font-bold text-zinc-900 text-base">
+                          Sign Token : {getWordTrajectory(currentToken).word}
+                        </h3>
+                      </div>
+                      <p className="text-xs text-zinc-500 mt-0.5">
+                        Token {selectedTokenIndex + 1} of {animTokens.length} • {getWordTrajectory(currentToken).category}
                       </p>
                     </div>
-                    <div className="flex items-center gap-2">
+
+                    {/* Playback & Step Controls */}
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setSelectedTokenIndex((prev) =>
+                            prev > 0 ? prev - 1 : animTokens.length - 1
+                          )
+                        }
+                        className="p-1.5 rounded-lg border border-zinc-200 hover:bg-zinc-100 text-zinc-700 cursor-pointer"
+                        title="Previous Sign"
+                      >
+                        <SkipBack className="w-4 h-4" />
+                      </button>
+
                       <button
                         type="button"
                         onClick={() => setIsPlayingSeq(!isPlayingSeq)}
-                        className="btn-secondary text-xs py-1.5 px-3 cursor-pointer"
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-900 text-white hover:bg-zinc-800 font-mono text-xs font-bold cursor-pointer"
                       >
                         {isPlayingSeq ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
-                        <span>{isPlayingSeq ? "Pause" : "Play Sequence"}</span>
+                        <span>{isPlayingSeq ? "Pause" : "Play"}</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setSelectedTokenIndex((prev) =>
+                            prev < animTokens.length - 1 ? prev + 1 : 0
+                          )
+                        }
+                        className="p-1.5 rounded-lg border border-zinc-200 hover:bg-zinc-100 text-zinc-700 cursor-pointer"
+                        title="Next Sign"
+                      >
+                        <SkipForward className="w-4 h-4" />
+                      </button>
+
+                      <div className="ml-1 flex items-center gap-1">
+                        <button
+                          type="button"
+                          onClick={() => setAnimSpeed(0.75)}
+                          className={`px-2 py-1 rounded text-xs font-mono font-semibold cursor-pointer ${
+                            animSpeed === 0.75
+                              ? "bg-zinc-900 text-white"
+                              : "bg-white border border-zinc-200 text-zinc-600 hover:bg-zinc-100"
+                          }`}
+                        >
+                          0.75x
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setAnimSpeed(1.0)}
+                          className={`px-2 py-1 rounded text-xs font-mono font-semibold cursor-pointer ${
+                            animSpeed === 1.0
+                              ? "bg-zinc-900 text-white"
+                              : "bg-white border border-zinc-200 text-zinc-600 hover:bg-zinc-100"
+                          }`}
+                        >
+                          1.0x
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Procedural 3D Skeletal Sign Trajectory Canvas */}
+                  <TextToGesturePlayer
+                    tokens={animTokens}
+                    activeTokenIndex={selectedTokenIndex}
+                    onTokenChange={(idx) => setSelectedTokenIndex(idx)}
+                    isPlaying={isPlayingSeq}
+                    speedMultiplier={animSpeed}
+                  />
+
+                  {/* Token Linguistic / Motor Information Card */}
+                  <div className="space-y-2.5 p-4 rounded-xl bg-zinc-50 border border-zinc-200">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="w-5 h-5 rounded-md bg-zinc-900 text-white font-mono font-bold text-xs flex items-center justify-center">
+                          {selectedTokenIndex + 1}
+                        </span>
+                        <h4 className="font-bold text-sm text-zinc-900">
+                          {getWordTrajectory(currentToken).word} Motion Guidance
+                        </h4>
+                      </div>
+                      <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 font-medium">
+                        Anchor: {getWordTrajectory(currentToken).bodyAnchor}
+                      </span>
+                    </div>
+
+                    <p className="text-xs text-zinc-700 leading-relaxed bg-white p-3 rounded-lg border border-zinc-200 shadow-2xs">
+                      {getWordTrajectory(currentToken).summary}
+                    </p>
+
+                    <div className="flex flex-wrap items-center justify-between gap-2 pt-1 text-xs text-zinc-500 font-mono">
+                      <span>
+                        {getWordTrajectory(currentToken).isTwoHanded
+                          ? "Two-Handed Coordination"
+                          : "Single-Hand Dominant Sign"}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setActiveMode("videoToText");
+                          if (cameraStatus !== "active") {
+                            startCamera(facingMode);
+                          }
+                        }}
+                        className="text-amethyst_smoke-400 hover:underline font-semibold cursor-pointer"
+                      >
+                        Practice with live camera →
                       </button>
                     </div>
-                  </div>
-
-                  {/* Animated Display Screen */}
-                  <div className="w-full bg-zinc-950 rounded-xl aspect-video flex flex-col items-center justify-center p-8 text-center relative overflow-hidden border border-zinc-800">
-                    <div className="w-24 h-24 rounded-full border border-zinc-700 bg-zinc-900 flex items-center justify-center text-zinc-300 mb-4 animate-pulse shadow-md">
-                      <Hand className="w-12 h-12 text-amethyst_smoke-400" />
-                    </div>
-                    <p className="text-white font-mono text-sm tracking-widest uppercase mb-1">
-                      Gesture Motion Sequence
-                    </p>
-                    <p className="text-zinc-400 font-mono text-xs mb-3">
-                      Token [{selectedTokenIndex + 1}/{animTokens.length}]: {currentToken}
-                    </p>
-                    <div className="absolute bottom-3 left-4 right-4 flex items-center justify-between text-[11px] font-mono text-zinc-500">
-                      <span>Frame: 24 / 48</span>
-                      <span>Target: Standard ISL/ASL Gloss</span>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between pt-2 text-xs text-zinc-500 font-mono">
-                    <span>Playback Speed: 1.0x (1.2s per sign)</span>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setActiveMode("videoToText");
-                        if (cameraStatus !== "active") {
-                          startCamera(facingMode);
-                        }
-                      }}
-                      className="text-amethyst_smoke-400 hover:underline font-semibold cursor-pointer"
-                    >
-                      Verify this gesture with camera →
-                    </button>
                   </div>
                 </div>
               </div>
