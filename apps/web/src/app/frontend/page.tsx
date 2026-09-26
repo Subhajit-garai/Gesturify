@@ -1,14 +1,14 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import Header from "./components/Header";
-import Hero from "./components/Hero";
-import LearnerHub from "./components/LearnerHub";
-import TranslationStudio from "./components/TranslationStudio";
-import About from "./components/About";
-import Contact from "./components/Contact";
-import AuthModal from "./components/AuthModal";
-import { SentenceTemplate } from "./data/gestures";
+import React, { useState } from "react";
+import Header from "@/components/Header";
+import Hero from "@/components/Hero";
+import LearnerHub from "@/components/LearnerHub";
+import TranslationStudio from "@/components/TranslationStudio";
+import About from "@/components/About";
+import Contact from "@/components/Contact";
+import AuthModal from "@/components/AuthModal";
+import { SentenceTemplate } from "@/data/gestures";
 
 export default function FrontendPage() {
   const [isAuthOpen, setIsAuthOpen] = useState(false);

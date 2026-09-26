@@ -1,4 +1,6 @@
-import React, { useRef, useEffect, useState, useMemo } from 'react';
+"use client";
+
+import React, { useRef, useEffect, useState, useMemo } from "react";
 
 interface SplitTextProps {
   text?: string;
@@ -9,20 +11,20 @@ interface SplitTextProps {
   easing?: string;
   threshold?: number;
   rootMargin?: string;
-  textAlign?: 'left' | 'right' | 'center' | 'justify' | 'initial' | 'inherit';
+  textAlign?: "left" | "right" | "center" | "justify" | "initial" | "inherit";
   onLetterAnimationComplete?: () => void;
 }
 
 export default function SplitText({
-  text = '',
-  className = '',
+  text = "",
+  className = "",
   delay = 50,
-  animationFrom = { opacity: 0, transform: 'translate3d(0,35px,0)' },
-  animationTo = { opacity: 1, transform: 'translate3d(0,0,0)' },
-  easing = 'cubic-bezier(0.2, 0.65, 0.3, 0.9)',
+  animationFrom = { opacity: 0, transform: "translate3d(0,35px,0)" },
+  animationTo = { opacity: 1, transform: "translate3d(0,0,0)" },
+  easing = "cubic-bezier(0.2, 0.65, 0.3, 0.9)",
   threshold = 0.1,
-  rootMargin = '-50px',
-  textAlign = 'center',
+  rootMargin = "-50px",
+  textAlign = "center",
   onLetterAnimationComplete,
 }: SplitTextProps) {
   const [inView, setInView] = useState(false);
@@ -48,7 +50,7 @@ export default function SplitText({
     return () => observer.disconnect();
   }, [threshold, rootMargin]);
 
-  const words = useMemo(() => text.split(' '), [text]);
+  const words = useMemo(() => text.split(" "), [text]);
 
   // Track global letter index across words for sequential stagger delay
   let letterIndex = 0;
@@ -57,36 +59,36 @@ export default function SplitText({
     <p
       ref={containerRef}
       className={`inline-block overflow-hidden ${className}`}
-      style={{ textAlign, whiteSpace: 'normal', wordWrap: 'break-word' }}
+      style={{ textAlign, whiteSpace: "normal", wordWrap: "break-word" }}
     >
       {words.map((word, wordIdx) => {
-        const letters = word.split('');
+        const letters = word.split("");
         return (
-          <span key={wordIdx} className="inline-block whitespace-nowrap mr-[0.25em]">
+          <span key={wordIdx} className="inline-block whitespace-nowrap">
             {letters.map((char, charIdx) => {
               const currentDelay = letterIndex * delay;
-              const isLast = wordIdx === words.length - 1 && charIdx === letters.length - 1;
-              letterIndex++;
-
+              letterIndex += 1;
               return (
                 <span
                   key={charIdx}
-                  className="inline-block transition-all will-change-transform will-change-opacity"
+                  className="inline-block transition-all duration-500 ease-out will-change-transform"
                   style={{
-                    opacity: inView ? animationTo.opacity ?? 1 : animationFrom.opacity ?? 0,
-                    transform: inView
-                      ? animationTo.transform ?? 'translate3d(0,0,0)'
-                      : animationFrom.transform ?? 'translate3d(0,35px,0)',
-                    transitionDuration: '0.6s',
-                    transitionTimingFunction: easing,
+                    opacity: inView ? animationTo.opacity : animationFrom.opacity,
+                    transform: inView ? animationTo.transform : animationFrom.transform,
                     transitionDelay: `${currentDelay}ms`,
+                    transitionTimingFunction: easing,
                   }}
-                  onTransitionEnd={isLast ? onLetterAnimationComplete : undefined}
+                  onTransitionEnd={() => {
+                    if (wordIdx === words.length - 1 && charIdx === letters.length - 1) {
+                      onLetterAnimationComplete?.();
+                    }
+                  }}
                 >
                   {char}
                 </span>
               );
             })}
+            {wordIdx < words.length - 1 && <span className="inline-block">&nbsp;</span>}
           </span>
         );
       })}
