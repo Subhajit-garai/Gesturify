@@ -58,3 +58,8 @@ Thumbs.db
 # *.tar.gz
 # Local private notes & planning logs
 signpart.md
+
+# Monorepo lockfile isolation (pnpm only)
+package-lock.json
+yarn.lock
+
