@@ -12,6 +12,8 @@ import {
   SentenceTemplate,
 } from "@/data/gestures";
 import OpenCvHud from "./OpenCvHud";
+import WordTrajectoryHud from "./WordTrajectoryHud";
+import SentencePlayerHud from "./SentencePlayerHud";
 
 interface LearnerHubProps {
   onSelectSentenceForAnimation?: (sentence: SentenceTemplate) => void;
@@ -21,6 +23,7 @@ export default function LearnerHub({ onSelectSentenceForAnimation }: LearnerHubP
   const [activeTab, setActiveTab] = useState<"alphabet" | "words" | "sentence" | "grammar">("alphabet");
   const [selectedAlphabet, setSelectedAlphabet] = useState<AlphabetItem>(ALPHABETS[0]);
   const [selectedWord, setSelectedWord] = useState<WordItem>(WORDS[0]);
+  const [selectedSentence, setSelectedSentence] = useState<SentenceTemplate>(SENTENCE_TEMPLATES[0]);
 
   return (
     <section id="learner" className="py-16 border-b border-zinc-200">
@@ -175,14 +178,30 @@ export default function LearnerHub({ onSelectSentenceForAnimation }: LearnerHubP
 
                 <div className="space-y-4">
                   {SENTENCE_TEMPLATES.map((item, idx) => (
-                    <div key={idx} className="p-5 border border-zinc-200 rounded-xl bg-white space-y-3 shadow-xs">
+                    <div
+                      key={idx}
+                      onClick={() => setSelectedSentence(item)}
+                      className={`p-5 border rounded-xl bg-white space-y-3 shadow-xs cursor-pointer transition-all ${
+                        selectedSentence.spoken === item.spoken
+                          ? "border-amethyst_smoke-400 ring-2 ring-amethyst_smoke-400/20"
+                          : "border-zinc-200 hover:border-zinc-400"
+                      }`}
+                    >
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                        <span className="text-xs font-mono uppercase text-zinc-400 font-semibold">
-                          Spoken English
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-mono uppercase text-zinc-400 font-semibold">
+                            Spoken English
+                          </span>
+                          {selectedSentence.spoken === item.spoken && (
+                            <span className="badge-minimal">Active in Sequencer</span>
+                          )}
+                        </div>
                         <button
                           type="button"
-                          onClick={() => onSelectSentenceForAnimation && onSelectSentenceForAnimation(item)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (onSelectSentenceForAnimation) onSelectSentenceForAnimation(item);
+                          }}
                           className="btn-secondary text-xs py-1 px-3 self-start sm:self-auto cursor-pointer"
                         >
                           <span>Try in Translation Studio</span>
@@ -243,9 +262,15 @@ export default function LearnerHub({ onSelectSentenceForAnimation }: LearnerHubP
             )}
           </div>
 
-          {/* Right Column: OpenCV Vision HUD (5 Cols) */}
+          {/* Right Column: Dynamic Vision HUD (5 Cols) */}
           <div className="lg:col-span-5 sticky top-24">
-            <OpenCvHud targetChar={selectedAlphabet.char} />
+            {activeTab === "words" ? (
+              <WordTrajectoryHud targetWord={selectedWord.word} />
+            ) : activeTab === "sentence" ? (
+              <SentencePlayerHud sentence={selectedSentence} />
+            ) : (
+              <OpenCvHud targetChar={selectedAlphabet.char} />
+            )}
           </div>
         </div>
       </div>

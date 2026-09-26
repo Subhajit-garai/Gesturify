@@ -1,6 +1,11 @@
 "use client";
 
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
+import { SKELETON_CONNECTIONS, HandPose21 } from "@/data/alphabetPoses";
+import { AlphabetPoseCache } from "@/lib/alphabetCache";
+import { HandMorphEngine } from "@/vision/handMorphEngine";
+import { getAlphabetInstruction } from "@/data/alphabetInstructions";
+import { Sparkles } from "lucide-react";
 
 interface OpenCvHudProps {
   targetChar?: string;
@@ -8,6 +13,38 @@ interface OpenCvHudProps {
 
 export default function OpenCvHud({ targetChar = "A" }: OpenCvHudProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const [hudState, setHudState] = useState({
+    activeChar: "A",
+    isMorphing: false,
+    cacheStatus: "CACHE HIT (0ms)",
+  });
+
+  // Track previous pose and target pose across renders
+  const currentPoseRef = useRef<HandPose21>(AlphabetPoseCache.getPose("A"));
+  const previousPoseRef = useRef<HandPose21>(AlphabetPoseCache.getPose("A"));
+  const targetPoseRef = useRef<HandPose21>(AlphabetPoseCache.getPose(targetChar || "A"));
+  const targetCharRef = useRef<string>(targetChar || "A");
+
+  // Preload poses in background on mount
+  useEffect(() => {
+    AlphabetPoseCache.preloadAll();
+  }, []);
+
+  // Whenever targetChar changes, start a smooth morph
+  useEffect(() => {
+    const cleanChar = (targetChar || "A").toUpperCase().trim().charAt(0) || "A";
+    targetCharRef.current = cleanChar;
+
+    const newTarget = AlphabetPoseCache.getPose(cleanChar);
+    previousPoseRef.current = { ...currentPoseRef.current };
+    targetPoseRef.current = newTarget;
+
+    setHudState({
+      activeChar: cleanChar,
+      isMorphing: true,
+      cacheStatus: AlphabetPoseCache.hasPose(cleanChar) ? "MEMORY CACHE HIT" : "SESSION CACHE HIT",
+    });
+  }, [targetChar]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -15,18 +52,65 @@ export default function OpenCvHud({ targetChar = "A" }: OpenCvHudProps) {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    let frame = 0;
     let animationFrameId: number;
+    let morphStartTime: number | null = null;
+    const MORPH_DURATION_MS = 280; // Smooth 280ms transition between handshapes
+    let lastRenderTime = 0;
+    const IDLE_INTERVAL_MS = 65; // ~15 FPS low-frequency idle throttle when resting
 
-    const render = () => {
-      frame++;
+    const render = (timestamp: number) => {
+      const isMorphing = targetPoseRef.current !== null && morphStartTime !== null;
+
+      if (!isMorphing) {
+        // Low-frequency throttle during resting state: skip frame if too soon
+        if (timestamp - lastRenderTime < IDLE_INTERVAL_MS) {
+          animationFrameId = requestAnimationFrame(render);
+          return;
+        }
+      }
+
+      lastRenderTime = timestamp;
+
+      // 1. Calculate Active Morph Interpolation Progress
+      let activePose: HandPose21;
+
+      if (morphStartTime === null) {
+        morphStartTime = timestamp;
+      }
+
+      const elapsed = timestamp - morphStartTime;
+      const progress = Math.min(1, elapsed / MORPH_DURATION_MS);
+
+      if (progress < 1) {
+        // Active morph in progress (smooth ease-in-out)
+        activePose = HandMorphEngine.interpolate(
+          previousPoseRef.current,
+          targetPoseRef.current,
+          progress
+        );
+        currentPoseRef.current = activePose;
+      } else {
+        // Morph complete: settle into resting target pose
+        activePose = targetPoseRef.current;
+        currentPoseRef.current = activePose;
+      }
+
+      // Update state if morphing just completed
+      if (progress >= 1 && morphStartTime !== null && elapsed >= MORPH_DURATION_MS) {
+        setHudState((prev) => {
+          if (prev.isMorphing) {
+            return { ...prev, isMorphing: false };
+          }
+          return prev;
+        });
+      }
+
+      // 2. Clear canvas with dark futuristic palette (#191321)
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      // Dark sleek background matching index.html/app.js
       ctx.fillStyle = "#191321";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Subtle OpenCV grid lines
+      // 3. Subtle OpenCV Coordinate Grid
       ctx.strokeStyle = "rgba(184, 190, 221, 0.08)";
       ctx.lineWidth = 1;
       const gridSize = 40;
@@ -43,79 +127,64 @@ export default function OpenCvHud({ targetChar = "A" }: OpenCvHudProps) {
         ctx.stroke();
       }
 
-      // 21 Keypoints for Hand Skeletal Tracking
+      // 4. Compute Dynamic Base Wrist with Subtle Organic Idle Sway
       const cx = canvas.width / 2;
       const cy = canvas.height / 2 + 15;
-      const swayX = Math.sin(frame * 0.03) * 12;
-      const swayY = Math.cos(frame * 0.02) * 8;
+      const frameCount = timestamp / 30;
+      const idleOffset = HandMorphEngine.getIdleOffset(frameCount);
 
-      const baseWrist = { x: cx + swayX, y: cy + 90 + swayY };
-
-      const joints: Record<number, { x: number; y: number }> = {
-        0: baseWrist,
-        // Thumb
-        1: { x: baseWrist.x - 35, y: baseWrist.y - 25 },
-        2: { x: baseWrist.x - 55, y: baseWrist.y - 55 },
-        3: { x: baseWrist.x - 65, y: baseWrist.y - 85 },
-        4: { x: baseWrist.x - 70, y: baseWrist.y - 110 },
-        // Index
-        5: { x: baseWrist.x - 20, y: baseWrist.y - 65 },
-        6: { x: baseWrist.x - 25, y: baseWrist.y - 110 },
-        7: { x: baseWrist.x - 28, y: baseWrist.y - 145 },
-        8: { x: baseWrist.x - 30, y: baseWrist.y - 175 },
-        // Middle
-        9: { x: baseWrist.x, y: baseWrist.y - 70 },
-        10: { x: baseWrist.x, y: baseWrist.y - 120 },
-        11: { x: baseWrist.x, y: baseWrist.y - 160 },
-        12: { x: baseWrist.x, y: baseWrist.y - 195 },
-        // Ring
-        13: { x: baseWrist.x + 20, y: baseWrist.y - 65 },
-        14: { x: baseWrist.x + 24, y: baseWrist.y - 110 },
-        15: { x: baseWrist.x + 27, y: baseWrist.y - 145 },
-        16: { x: baseWrist.x + 30, y: baseWrist.y - 175 },
-        // Pinky
-        17: { x: baseWrist.x + 38, y: baseWrist.y - 55 },
-        18: { x: baseWrist.x + 48, y: baseWrist.y - 90 },
-        19: { x: baseWrist.x + 55, y: baseWrist.y - 120 },
-        20: { x: baseWrist.x + 60, y: baseWrist.y - 145 },
+      const baseWrist = {
+        x: cx + idleOffset.x,
+        y: cy + 85 + idleOffset.y,
       };
 
-      const connections = [
-        [0, 1], [1, 2], [2, 3], [3, 4],
-        [0, 5], [5, 6], [6, 7], [7, 8],
-        [5, 9], [9, 10], [10, 11], [11, 12],
-        [9, 13], [13, 14], [14, 15], [15, 16],
-        [13, 17], [17, 18], [18, 19], [19, 20],
-        [0, 17],
-      ];
+      // 5. Convert 21 Joint Offsets to Screen Coordinates
+      const screenJoints: Record<number, { x: number; y: number }> = {};
+      for (let id = 0; id <= 20; id++) {
+        const offset = activePose[id] || { x: 0, y: 0 };
+        screenJoints[id] = {
+          x: baseWrist.x + offset.x,
+          y: baseWrist.y + offset.y,
+        };
+      }
 
-      // Draw Bones in soft periwinkle
+      // 6. Draw Bones (Skeleton Connections)
       ctx.strokeStyle = "rgba(184, 190, 221, 0.85)";
       ctx.lineWidth = 2.5;
-      connections.forEach(([i, j]) => {
-        ctx.beginPath();
-        ctx.moveTo(joints[i].x, joints[i].y);
-        ctx.lineTo(joints[j].x, joints[j].y);
-        ctx.stroke();
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+
+      SKELETON_CONNECTIONS.forEach(([i, j]) => {
+        const p1 = screenJoints[i];
+        const p2 = screenJoints[j];
+        if (p1 && p2) {
+          ctx.beginPath();
+          ctx.moveTo(p1.x, p1.y);
+          ctx.lineTo(p2.x, p2.y);
+          ctx.stroke();
+        }
       });
 
-      // Draw Keypoint Nodes
-      for (const id in joints) {
-        const pt = joints[id];
+      // 7. Draw Keypoint Nodes
+      for (let id = 0; id <= 20; id++) {
+        const pt = screenJoints[id];
+        if (!pt) continue;
+
+        const isAnchor = id === 0 || id === 4 || id === 8 || id === 12;
         ctx.beginPath();
-        ctx.arc(pt.x, pt.y, id === "0" || id === "4" || id === "8" || id === "12" ? 5 : 3.5, 0, Math.PI * 2);
-        ctx.fillStyle = id === "0" || id === "4" || id === "8" || id === "12" ? "#f0a6ca" : "#efc3e6";
+        ctx.arc(pt.x, pt.y, isAnchor ? 5 : 3.5, 0, Math.PI * 2);
+        ctx.fillStyle = isAnchor ? "#f0a6ca" : "#efc3e6";
         ctx.fill();
         ctx.strokeStyle = "#3d3050";
         ctx.lineWidth = 1;
         ctx.stroke();
       }
 
-      // Draw HUD Overlays: Bounding Box
+      // 8. Draw HUD Bounding Box Guides
       const bx = cx - 110;
       const by = cy - 130;
       const bw = 220;
-      const bh = 260;
+      const bh = 250;
 
       ctx.strokeStyle = "rgba(184, 190, 221, 0.35)";
       ctx.lineWidth = 1;
@@ -123,7 +192,7 @@ export default function OpenCvHud({ targetChar = "A" }: OpenCvHudProps) {
       ctx.strokeRect(bx, by, bw, bh);
       ctx.setLineDash([]);
 
-      // Corner brackets
+      // Corner Brackets
       const cornerLen = 14;
       ctx.strokeStyle = "#b8bedd";
       ctx.lineWidth = 2;
@@ -156,58 +225,109 @@ export default function OpenCvHud({ targetChar = "A" }: OpenCvHudProps) {
       ctx.lineTo(bx + bw, by + bh - cornerLen);
       ctx.stroke();
 
-      // Telemetry
+      // 9. Telemetry Overlay
       ctx.font = '10px "JetBrains Mono", monospace';
-      ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
-      ctx.fillText(`FPS: 60.0 | RES: ${canvas.width}x${canvas.height}`, 16, canvas.height - 16);
-      ctx.fillText(`LANDMARKS: 21 DETECTED`, canvas.width - 150, canvas.height - 16);
+      ctx.fillStyle = "rgba(255, 255, 255, 0.85)";
+
+      const fpsLabel = progress < 1 ? "60.0 (MORPHING)" : "15.0 (IDLE LOW-PWR)";
+      ctx.fillText(`RATE: ${fpsLabel} | RES: ${canvas.width}x${canvas.height}`, 16, canvas.height - 16);
+      ctx.fillText(`TARGET: '${targetCharRef.current}' | 21 JOINTS`, canvas.width - 170, canvas.height - 16);
 
       animationFrameId = requestAnimationFrame(render);
     };
 
-    render();
-    return () => cancelAnimationFrame(animationFrameId);
-  }, []);
+    animationFrameId = requestAnimationFrame(render);
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, [targetChar]);
+
+  const instruction = getAlphabetInstruction(hudState.activeChar);
 
   return (
-    <div className="border border-zinc-200 rounded-2xl p-5 bg-white shadow-sm">
-      <div className="flex items-center justify-between mb-4">
+    <div className="border border-zinc-200 rounded-2xl p-5 bg-white shadow-sm space-y-4">
+      {/* Top Header */}
+      <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <span className="w-2.5 h-2.5 rounded-full bg-amethyst_smoke-400 animate-pulse" />
+          <span
+            className={`w-2.5 h-2.5 rounded-full ${
+              hudState.isMorphing ? "bg-emerald-500 animate-ping" : "bg-amethyst_smoke-400 animate-pulse"
+            }`}
+          />
           <span className="font-mono text-xs uppercase tracking-wider font-semibold text-zinc-800">
-            OpenCV Vision HUD
+            OpenCV Alphabet HUD
           </span>
         </div>
-        <span className="badge-minimal">Pose: Letter {targetChar}</span>
+        <div className="flex items-center gap-2">
+          <span className="badge-minimal">Letter {hudState.activeChar}</span>
+          <span className="font-mono text-[10px] text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+            {hudState.cacheStatus}
+          </span>
+        </div>
       </div>
 
       {/* Canvas HUD Frame */}
-      <div className="opencv-hud aspect-video w-full rounded-xl overflow-hidden mb-4 relative">
+      <div className="opencv-hud aspect-video w-full rounded-xl overflow-hidden relative">
         <canvas ref={canvasRef} width={640} height={360} className="w-full h-full block" />
         <div className="opencv-badge">
           <div className="opencv-status-dot" />
-          <span>CV2_LANDMARK_21</span>
+          <span>{hudState.isMorphing ? "MORPHING_ACTIVE" : "CACHED_IDLE"}</span>
         </div>
       </div>
 
-      {/* HUD Specs & Telemetry */}
-      <div className="space-y-3 font-mono text-xs text-zinc-600 bg-zinc-50 p-4 rounded-xl border border-zinc-200">
+      {/* Physical Execution Instructions Guide Directly Under the Animation */}
+      <div className="space-y-3 p-4 rounded-xl bg-zinc-50 border border-zinc-200">
         <div className="flex items-center justify-between">
-          <span>Tracking Engine:</span>
-          <span className="font-semibold text-zinc-900">OpenCV Mediapipe Hands</span>
+          <div className="flex items-center gap-2">
+            <span className="w-6 h-6 rounded-md bg-zinc-900 text-white font-mono font-bold text-xs flex items-center justify-center">
+              {instruction.char}
+            </span>
+            <h4 className="font-bold text-sm text-zinc-900">{instruction.name} Execution Guide</h4>
+          </div>
+          <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-zinc-200/80 text-zinc-700 font-medium">
+            {instruction.category}
+          </span>
         </div>
-        <div className="flex items-center justify-between">
-          <span>Keypoints Detected:</span>
-          <span className="font-semibold text-zinc-900">21 Coordinates (X, Y, Z)</span>
+
+        {/* Quick Summary Banner */}
+        <p className="text-xs text-zinc-700 font-medium leading-relaxed bg-white p-3 rounded-lg border border-zinc-200/80 shadow-2xs">
+          {instruction.summary}
+        </p>
+
+        {/* 3 Step-by-Step Instructions */}
+        <div className="space-y-2 pt-1">
+          <span className="text-[10px] font-mono uppercase font-bold text-zinc-400 tracking-wider block">
+            Step-by-Step Finger Positions:
+          </span>
+          {instruction.steps.map((step, idx) => (
+            <div key={idx} className="flex items-start gap-2.5 text-xs text-zinc-700">
+              <span className="w-5 h-5 rounded-full bg-zinc-200/90 text-zinc-800 font-mono font-bold text-[10px] flex items-center justify-center shrink-0 mt-0.5">
+                {idx + 1}
+              </span>
+              <span className="leading-snug">{step}</span>
+            </div>
+          ))}
         </div>
-        <div className="flex items-center justify-between">
-          <span>Pose Stability:</span>
-          <span className="font-semibold text-zinc-900">98.4% Nominal</span>
+
+        {/* Pro-Tip & Common Mistake Callout */}
+        <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-lg flex items-start gap-2 text-xs text-amber-950 mt-2">
+          <Sparkles className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+          <div className="leading-relaxed">
+            <span className="font-bold font-mono text-[10px] uppercase text-amber-800 mr-1.5 bg-amber-200/50 px-1 py-0.5 rounded">
+              PRO-TIP
+            </span>
+            <span>{instruction.proTip}</span>
+          </div>
         </div>
-        <div className="flex items-center justify-between border-t border-zinc-200 pt-2">
-          <span>Target Handshape:</span>
-          <span className="font-semibold text-zinc-900">Right Hand (Dominant)</span>
-        </div>
+      </div>
+
+      {/* Mini Telemetry Bar */}
+      <div className="flex items-center justify-between text-[11px] font-mono text-zinc-500 px-1">
+        <span>MediaPipe 21-Joint Morph Engine</span>
+        <span className="text-emerald-600 font-medium">
+          {hudState.isMorphing ? "Adaptive Burst (60 FPS)" : "Power-Save Idle (~15 FPS)"}
+        </span>
       </div>
     </div>
   );

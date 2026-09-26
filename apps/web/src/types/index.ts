@@ -37,6 +37,7 @@ export interface Prediction {
   category?: string;
   timestamp: number;
   isStable?: boolean;
+  debugInfo?: string;
 }
 
 export interface SignSentenceItem {

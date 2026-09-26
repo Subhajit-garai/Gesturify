@@ -64,10 +64,66 @@ export class SentenceBuilder {
       };
     }
 
+    if (textJoined.includes("HELLO NICE MEET YOU") || textJoined.includes("NICE MEET YOU")) {
+      return {
+        english: "Hello, nice to meet you!",
+        hindi: "नमस्ते, आपसे मिलकर बहुत अच्छा लगा!",
+        tokens: labels,
+      };
+    }
+
     if (textJoined === "HELLO") {
       return {
         english: "Hello! Greetings.",
         hindi: "नमस्ते!",
+        tokens: labels,
+      };
+    }
+
+    if (textJoined === "THANK YOU") {
+      return {
+        english: "Thank you very much.",
+        hindi: "आपका बहुत-बहुत धन्यवाद।",
+        tokens: labels,
+      };
+    }
+
+    if (textJoined === "YES") {
+      return {
+        english: "Yes, I agree.",
+        hindi: "हाँ, मैं सहमत हूँ।",
+        tokens: labels,
+      };
+    }
+
+    if (textJoined === "NO") {
+      return {
+        english: "No, that is not correct.",
+        hindi: "नहीं, यह सही नहीं है।",
+        tokens: labels,
+      };
+    }
+
+    if (textJoined === "GOOD") {
+      return {
+        english: "This is very good!",
+        hindi: "यह बहुत अच्छा है!",
+        tokens: labels,
+      };
+    }
+
+    if (textJoined === "STOP") {
+      return {
+        english: "Please stop right here.",
+        hindi: "कृपया यहाँ रुकिए।",
+        tokens: labels,
+      };
+    }
+
+    if (textJoined === "PLEASE") {
+      return {
+        english: "Please assist me.",
+        hindi: "कृपया मेरी सहायता करें।",
         tokens: labels,
       };
     }
@@ -80,7 +136,7 @@ export class SentenceBuilder {
       };
     }
 
-    if (textJoined.includes("SORRY PLEASE")) {
+    if (textJoined.includes("SORRY PLEASE") || textJoined === "SORRY") {
       return {
         english: "I am sorry, please excuse me.",
         hindi: "मुझे खेद है, कृपया मुझे क्षमा करें।",
