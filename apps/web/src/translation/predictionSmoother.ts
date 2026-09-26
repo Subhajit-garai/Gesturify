@@ -10,10 +10,10 @@ export class PredictionSmoother {
 
   constructor(
     config: SmoothingConfig = {
-      confidenceThreshold: 0.82,
-      windowSize: 8,
-      minAgreementCount: 5,
-      cooldownMs: 1400,
+      confidenceThreshold: 0.72,
+      windowSize: 6,
+      minAgreementCount: 3,
+      cooldownMs: 1100,
     }
   ) {
     this.config = config;

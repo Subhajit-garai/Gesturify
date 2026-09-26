@@ -5,6 +5,7 @@ import { FEATURES_PER_FRAME } from "@/vision/landmarkProcessor";
 export class GeometricSignClassifier {
   /**
    * Analyzes 30-frame temporal buffer [30 * 147] to detect physical ISL gestures
+   * using scale- and rotation-invariant 3D Euclidean distance ratios.
    */
   public static classify(sequence: Float32Array): Prediction {
     const totalFrames = 30;
@@ -15,6 +16,7 @@ export class GeometricSignClassifier {
         label: "SEARCHING",
         confidence: 0.1,
         timestamp: Date.now(),
+        debugInfo: "Buffering frames...",
       };
     }
 
@@ -39,105 +41,150 @@ export class GeometricSignClassifier {
         label: "NO HANDS DETECTED",
         confidence: 0,
         timestamp: Date.now(),
+        debugInfo: "Hold hands in camera view",
       };
     }
 
     const primaryHand = rightActive ? rightHand : leftHand;
+    const secondaryHand = rightActive ? leftHand : rightHand;
     const isTwoHanded = leftActive && rightActive;
 
-    // Check finger states for primary hand:
+    // Check finger states using rotation- and scale-invariant 3D Euclidean ratios:
     // Landmarks: 0: Wrist, 4: ThumbTip, 8: IndexTip, 12: MiddleTip, 16: RingTip, 20: PinkyTip
-    // MCP joints: 2: ThumbMCP, 5: IndexMCP, 9: MiddleMCP, 13: RingMCP, 17: PinkyMCP
-    const indexExt = this.isFingerExtended(primaryHand, 8, 5);
-    const middleExt = this.isFingerExtended(primaryHand, 12, 9);
-    const ringExt = this.isFingerExtended(primaryHand, 16, 13);
-    const pinkyExt = this.isFingerExtended(primaryHand, 20, 17);
+    // PIP joints: 3: ThumbIP, 6: IndexPIP, 10: MiddlePIP, 14: RingPIP, 18: PinkyPIP
     const thumbExt = this.isThumbExtended(primaryHand);
+    const indexExt = this.isFingerExtended(primaryHand, 8, 6);
+    const middleExt = this.isFingerExtended(primaryHand, 12, 10);
+    const ringExt = this.isFingerExtended(primaryHand, 16, 14);
+    const pinkyExt = this.isFingerExtended(primaryHand, 20, 18);
+
+    const indexCurl = this.isFingerCurled(primaryHand, 8, 6);
+    const middleCurl = this.isFingerCurled(primaryHand, 12, 10);
+    const ringCurl = this.isFingerCurled(primaryHand, 16, 14);
+    const pinkyCurl = this.isFingerCurled(primaryHand, 20, 18);
+    const thumbCurl = this.isThumbCurled(primaryHand);
+
+    const extendedCount = [indexExt, middleExt, ringExt, pinkyExt].filter(Boolean).length;
+    const curledCount = [indexCurl, middleCurl, ringCurl, pinkyCurl].filter(Boolean).length;
 
     // Calculate motion dynamics across the 30-frame sequence (wrist trajectory)
     const motion = this.calculateTrajectory(sequence, rightActive ? 63 : 0);
 
-    // Evaluate rules with confidence scores
-    const candidates: { label: string; score: number }[] = [];
+    const fingerSummary = `${rightActive ? "R" : "L"}: T:${thumbExt ? "✓" : "✗"} I:${indexExt ? "✓" : "✗"} M:${middleExt ? "✓" : "✗"} R:${ringExt ? "✓" : "✗"} P:${pinkyExt ? "✓" : "✗"}`;
 
-    // 1. HELP (Two-handed: one fist resting on horizontal palm, moving upward together)
+    // Evaluate candidate gestures with strict priority and non-overlapping signatures
+    const candidates: { label: string; score: number; reason: string }[] = [];
+
+    // --- TWO-HANDED GESTURES ---
     if (isTwoHanded) {
-      const dist = this.getHandDistance(leftHand, rightHand);
-      if (dist < 0.6 && motion.deltaY < -0.1) {
-        candidates.push({ label: "HELP", score: 0.92 });
+      const handDist = this.getHandDistance(leftHand, rightHand);
+
+      // Secondary hand finger state
+      const secIndexCurl = this.isFingerCurled(secondaryHand, 8, 6);
+      const secMiddleCurl = this.isFingerCurled(secondaryHand, 12, 10);
+      const isSecFist = secIndexCurl && secMiddleCurl;
+      const isPrimaryFist = indexCurl && middleCurl;
+
+      // 1. HELP (Fist resting on flat palm, moving upward together)
+      if (handDist < 0.8 && (isPrimaryFist || isSecFist)) {
+        if (motion.deltaY < -0.06 || motion.totalMovement > 0.15) {
+          candidates.push({ label: "HELP", score: 0.95, reason: "Two-handed fist on palm lift" });
+        } else {
+          candidates.push({ label: "HELP", score: 0.88, reason: "Two-handed fist on palm" });
+        }
       }
-      // STOP (Two hands: one vertical striking horizontal, or open hands forward)
-      if (dist < 0.7 && !indexExt && !middleExt) {
-        candidates.push({ label: "STOP", score: 0.88 });
+
+      // 2. STOP (One vertical hand striking/touching horizontal palm, or both hands flat forward)
+      if (handDist < 0.7 && extendedCount >= 3) {
+        candidates.push({ label: "STOP", score: 0.92, reason: "Two-handed stop barrier" });
       }
-      // WHERE (Both open palms face up, moving side-to-side)
-      if (motion.deltaX > 0.25 || motion.oscillationX > 2) {
-        candidates.push({ label: "WHERE", score: 0.89 });
+
+      // 3. WHERE (Both open palms facing upward, moving side-to-side)
+      if (extendedCount >= 3 && (motion.oscillationX >= 1 || motion.totalMovement > 0.2)) {
+        candidates.push({ label: "WHERE", score: 0.93, reason: "Two open palms questioning motion" });
       }
     }
 
-    // 2. HELLO (Open palm waving or moving outward near forehead/chest)
-    if (indexExt && middleExt && ringExt && pinkyExt) {
-      if (motion.oscillationX >= 2 || motion.totalMovement > 0.3) {
-        candidates.push({ label: "HELLO", score: 0.94 });
+    // --- SINGLE-HAND DISTINCT GESTURES ---
+
+    // 4. GOOD / THUMBS UP (Thumb extended up, all 4 fingers curled)
+    if (thumbExt && curledCount >= 3 && !indexExt && !middleExt) {
+      // Check thumb tip is pointing upward (Y < -0.2 relative to wrist)
+      const thumbTipY = primaryHand[4 * 3 + 1];
+      if (thumbTipY < -0.2) {
+        candidates.push({ label: "GOOD", score: 0.96, reason: "Clear thumbs up" });
       } else {
-        candidates.push({ label: "HELLO", score: 0.82 });
+        candidates.push({ label: "GOOD", score: 0.88, reason: "Thumb out fist" });
       }
     }
 
-    // 3. GOOD (Thumbs up: thumb extended, other 4 fingers curled)
-    if (thumbExt && !indexExt && !middleExt && !ringExt && !pinkyExt) {
-      candidates.push({ label: "GOOD", score: 0.95 });
-    }
-
-    // 4. WATER ('W' sign: 3 fingers extended: index, middle, ring, pinky curled, thumb tucked)
-    if (indexExt && middleExt && ringExt && !pinkyExt) {
-      candidates.push({ label: "WATER", score: 0.93 });
-    }
-
-    // 5. YES (Fist nodding: all fingers curled, vertical oscillation)
-    if (!indexExt && !middleExt && !ringExt && !pinkyExt && !thumbExt) {
-      if (motion.oscillationY >= 2 || Math.abs(motion.deltaY) > 0.15) {
-        candidates.push({ label: "YES", score: 0.91 });
+    // 5. YES (Fist nodding: all 4 fingers curled, thumb folded/tucked)
+    if (curledCount >= 3 && !indexExt && !middleExt && !ringExt && !pinkyExt) {
+      if (motion.oscillationY >= 1 || Math.abs(motion.deltaY) > 0.1) {
+        candidates.push({ label: "YES", score: 0.94, reason: "Nodding fist" });
       } else {
-        candidates.push({ label: "YES", score: 0.75 });
+        candidates.push({ label: "YES", score: 0.86, reason: "Stationary fist" });
       }
     }
 
-    // 6. NO (Index and middle extended, pinching or waving horizontally)
-    if (indexExt && middleExt && !ringExt && !pinkyExt) {
-      if (motion.oscillationX >= 1 || motion.totalMovement > 0.2) {
-        candidates.push({ label: "NO", score: 0.92 });
+    // 6. WATER ('W' sign: Index, Middle, Ring extended; Pinky curled; Thumb tucked)
+    if (indexExt && middleExt && ringExt && pinkyCurl) {
+      candidates.push({ label: "WATER", score: 0.95, reason: "W-handshape (3 fingers up)" });
+    }
+
+    // 7. NO (Index and Middle extended, Ring and Pinky curled)
+    if (indexExt && middleExt && ringCurl && pinkyCurl) {
+      if (motion.oscillationX >= 1 || motion.totalMovement > 0.15) {
+        candidates.push({ label: "NO", score: 0.94, reason: "2-finger horizontal shake" });
       } else {
-        candidates.push({ label: "NO", score: 0.84 });
+        candidates.push({ label: "NO", score: 0.87, reason: "2 fingers extended" });
       }
     }
 
-    // 7. I (Index finger pointing at chest)
-    if (indexExt && !middleExt && !ringExt && !pinkyExt) {
-      const tipZ = primaryHand[8 * 3 + 2];
-      if (tipZ < -0.1 || !thumbExt) {
-        candidates.push({ label: "I", score: 0.89 });
-      } else {
-        candidates.push({ label: "YOU", score: 0.87 });
-      }
-    }
-
-    // 8. FOOD (Bunch fingertips together, bunched distance < 0.25)
+    // 8. FOOD (Bunched fingertips together near face)
     if (this.isBunchedFingers(primaryHand)) {
-      candidates.push({ label: "FOOD", score: 0.90 });
+      candidates.push({ label: "FOOD", score: 0.93, reason: "Bunched fingertips tapping" });
     }
 
-    // 9. THANK YOU / PLEASE (Flat palm touching chest or chin moving forward)
-    if (indexExt && middleExt && ringExt) {
-      if (motion.deltaZ < -0.15 || motion.deltaY > 0.1) {
-        candidates.push({ label: "THANK YOU", score: 0.89 });
+    // 9. I vs YOU (Pointing single Index finger)
+    if (indexExt && middleCurl && ringCurl && pinkyCurl) {
+      const tipZ = primaryHand[8 * 3 + 2];
+      const tipY = primaryHand[8 * 3 + 1];
+
+      // Pointing inward toward chest = "I"
+      if (tipZ < -0.15 || tipY > 0.3) {
+        candidates.push({ label: "I", score: 0.92, reason: "Index pointing inward to chest" });
       } else {
-        candidates.push({ label: "PLEASE", score: 0.81 });
+        // Pointing straight forward toward camera = "YOU"
+        candidates.push({ label: "YOU", score: 0.91, reason: "Index pointing forward at partner" });
       }
     }
 
-    // Pick top candidate
+    // 10. HELLO vs THANK YOU vs PLEASE vs STOP (Open Flat Hand Shapes)
+    if (extendedCount >= 3) {
+      // A. THANK YOU: Flat hand moving forward/downward away from chin
+      if (motion.deltaZ < -0.12 || motion.deltaY > 0.14) {
+        candidates.push({ label: "THANK YOU", score: 0.93, reason: "Open hand moving forward from chin" });
+      }
+      // B. PLEASE: Flat hand circling on chest
+      else if (motion.oscillationX >= 1 && motion.oscillationY >= 1) {
+        candidates.push({ label: "PLEASE", score: 0.91, reason: "Circular chest rubbing motion" });
+      }
+      // C. HELLO: Waving or raised open palm near temple/head
+      else if (motion.oscillationX >= 1 || motion.totalMovement > 0.2) {
+        candidates.push({ label: "HELLO", score: 0.95, reason: "Open palm waving" });
+      }
+      // D. STOP: Firm vertical stationary open palm
+      else if (motion.totalMovement < 0.15) {
+        candidates.push({ label: "STOP", score: 0.89, reason: "Stationary vertical open palm" });
+      }
+      // E. Default open palm fallback: HELLO
+      else {
+        candidates.push({ label: "HELLO", score: 0.86, reason: "Open raised palm" });
+      }
+    }
+
+    // Sort by confidence score descending
     if (candidates.length > 0) {
       candidates.sort((a, b) => b.score - a.score);
       const top = candidates[0];
@@ -149,13 +196,15 @@ export class GeometricSignClassifier {
         hindiLabel: signMeta?.hindiLabel,
         category: signMeta?.category,
         timestamp: Date.now(),
+        debugInfo: `${fingerSummary} | ${top.reason}`,
       };
     }
 
     return {
       label: "ANALYZING...",
-      confidence: 0.45,
+      confidence: 0.5,
       timestamp: Date.now(),
+      debugInfo: `${fingerSummary} | Adjusting pose...`,
     };
   }
 
@@ -167,34 +216,68 @@ export class GeometricSignClassifier {
     return sum;
   }
 
+  // 3D Euclidean distance from wrist (0, 0, 0)
+  private static getWristDistance(hand: Float32Array, landmarkIdx: number): number {
+    const x = hand[landmarkIdx * 3];
+    const y = hand[landmarkIdx * 3 + 1];
+    const z = hand[landmarkIdx * 3 + 2];
+    return Math.sqrt(x * x + y * y + z * z);
+  }
+
+  // 3D Euclidean distance between two landmarks
+  private static getPointDistance(
+    hand: Float32Array,
+    idxA: number,
+    idxB: number
+  ): number {
+    const dx = hand[idxA * 3] - hand[idxB * 3];
+    const dy = hand[idxA * 3 + 1] - hand[idxB * 3 + 1];
+    const dz = hand[idxA * 3 + 2] - hand[idxB * 3 + 2];
+    return Math.sqrt(dx * dx + dy * dy + dz * dz);
+  }
+
+  // Finger is extended if tip is far beyond PIP knuckle
   private static isFingerExtended(
     hand: Float32Array,
     tipIdx: number,
-    mcpIdx: number
+    pipIdx: number
   ): boolean {
-    const tipY = hand[tipIdx * 3 + 1];
-    const mcpY = hand[mcpIdx * 3 + 1];
-    // In normalized coords, negative Y is upward towards head
-    return tipY < mcpY - 0.2;
+    const tipDist = this.getWristDistance(hand, tipIdx);
+    const pipDist = this.getWristDistance(hand, pipIdx);
+    return tipDist > pipDist * 1.22 && tipDist > 1.2;
   }
 
+  // Finger is curled if tip folds back towards palm
+  private static isFingerCurled(
+    hand: Float32Array,
+    tipIdx: number,
+    pipIdx: number
+  ): boolean {
+    const tipDist = this.getWristDistance(hand, tipIdx);
+    const pipDist = this.getWristDistance(hand, pipIdx);
+    return tipDist < pipDist * 1.08 || tipDist < 1.1;
+  }
+
+  // Thumb extended if tip is far from Index MCP (5) and wrist
   private static isThumbExtended(hand: Float32Array): boolean {
-    const tipX = hand[4 * 3];
-    const mcpX = hand[2 * 3];
-    return Math.abs(tipX - mcpX) > 0.35;
+    const tipWristDist = this.getWristDistance(hand, 4);
+    const tipToMcpDist = this.getPointDistance(hand, 4, 5);
+    return tipWristDist > 1.15 && tipToMcpDist > 0.75;
   }
 
+  // Thumb curled / tucked against palm
+  private static isThumbCurled(hand: Float32Array): boolean {
+    const tipToMcpDist = this.getPointDistance(hand, 4, 5);
+    return tipToMcpDist < 0.65;
+  }
+
+  // Bunched fingertips: all 5 fingertips meet together in a cluster
   private static isBunchedFingers(hand: Float32Array): boolean {
-    const tX = hand[4 * 3], tY = hand[4 * 3 + 1];
-    const iX = hand[8 * 3], iY = hand[8 * 3 + 1];
-    const mX = hand[12 * 3], mY = hand[12 * 3 + 1];
-    const rX = hand[16 * 3], rY = hand[16 * 3 + 1];
+    const dThumbIndex = this.getPointDistance(hand, 4, 8);
+    const dThumbMiddle = this.getPointDistance(hand, 4, 12);
+    const dIndexMiddle = this.getPointDistance(hand, 8, 12);
 
-    const d1 = Math.hypot(tX - iX, tY - iY);
-    const d2 = Math.hypot(tX - mX, tY - mY);
-    const d3 = Math.hypot(tX - rX, tY - rY);
-
-    return d1 < 0.25 && d2 < 0.25 && d3 < 0.3;
+    return dThumbIndex < 0.45 && dThumbMiddle < 0.45 && dIndexMiddle < 0.45;
   }
 
   private static getHandDistance(handA: Float32Array, handB: Float32Array): number {
@@ -220,8 +303,8 @@ export class GeometricSignClassifier {
     let prevDy = 0;
 
     for (let f = 1; f < frames; f++) {
-      const curr = (f * stride) + wristOffset;
-      const prev = ((f - 1) * stride) + wristOffset;
+      const curr = f * stride + wristOffset;
+      const prev = (f - 1) * stride + wristOffset;
 
       const dx = sequence[curr] - sequence[prev];
       const dy = sequence[curr + 1] - sequence[prev + 1];
