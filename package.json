@@ -8,13 +8,14 @@
     "dev:all": "turbo dev",
     "dev:docs": "npm --prefix apps/docs run dev",
     "dev:admin": "npm --prefix apps/admin run dev",
-    "build": "npm --prefix apps/web run build",
-    "build:web": "npm --prefix apps/web run build",
+    "build": "pnpm --filter=@gesturify/web build",
+    "build:web": "pnpm --filter=@gesturify/web build",
     "build:all": "turbo build",
     "lint": "npm --prefix apps/web run lint",
     "users": "node scripts/count-users.mjs"
   },
   "devDependencies": {
+    "next": "^16.3.6",
     "turbo": "^2.11.4"
   },
   "packageManager": "pnpm@10.24.0",
